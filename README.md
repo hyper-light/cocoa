@@ -1,4 +1,4 @@
-# <b>Cocoa</>
+# <b>Cocoa</b>
 ### A framework for building beautiful and performant terminal and CLI apps
 
 [![PyPI version](https://img.shields.io/pypi/v/hyperlight-cocoa?color=blue)](https://pypi.org/project/hyperscale/)
