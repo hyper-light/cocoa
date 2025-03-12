@@ -1,5 +1,5 @@
 # <b>Cocoa</b>
-### A framework for building beautiful and performant terminal and CLI apps
+#### A framework for building beautiful and performant terminal and CLI apps
 
 [![PyPI version](https://img.shields.io/pypi/v/hyperlight-cocoa?color=blue)](https://pypi.org/project/hyperscale/)
 [![License](https://img.shields.io/github/license/hyper-light/cocoa)](https://github.com/hyper-light/cocoa/blob/main/LICENSE)
