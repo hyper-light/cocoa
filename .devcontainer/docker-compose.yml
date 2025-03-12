@@ -1,0 +1,23 @@
+version: '3.10'
+
+services:
+  cocoa:
+      build:
+        context: ..
+        dockerfile: ./.devcontainer/Dockerfile
+        ssh:
+          - default=${SSH_AUTH_SOCK}
+      environment:
+        - LD_LIBRARY_PATH=/usr/local/lib
+      volumes:
+        - ..:/workspace
+        - ../.git:/workspace/.git
+        - ../.devcontainer:/workspace/.devcontainer
+        - ${HOME}/.aws:/root/.aws
+        - ${HOME}/.ssh:/root/.ssh
+        - ${HOME}/.git:/root/.git
+        - /run/snapd.socket:/run/snapd.socket
+      ports:
+        - 5003:5003
+      stdin_open: true
+      tty: true
