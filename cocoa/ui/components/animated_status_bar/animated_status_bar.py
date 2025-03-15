@@ -1,16 +1,15 @@
 import asyncio
 import math
-import time
 import random
-from typing import Literal
+import time
+from typing import Dict, List, Literal
 
-from cocoa.core.engines.client.time_parser import TimeParser
 from cocoa.ui.config.mode import TerminalMode
 from cocoa.ui.config.widget_fit_dimensions import WidgetFitDimensions
-from cocoa.ui.styling import stylize, get_style
+from cocoa.ui.styling import get_style, stylize
 from cocoa.ui.styling.attributes import Attributizer
 from cocoa.ui.styling.colors import Colorizer, HighlightColorizer
-from typing import Dict, List
+from cocoa.utils import TimeParser
 
 from .animated_status_bar_config import (
     AnimatedStatusBarConfig,
@@ -18,7 +17,6 @@ from .animated_status_bar_config import (
     AnimationDirection,
     AnimationType,
 )
-
 
 StylingMap = Dict[
     str,
