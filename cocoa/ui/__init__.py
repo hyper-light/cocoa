@@ -2,6 +2,7 @@ from .components import AnimatedStatusBar as AnimatedStatusBar
 from .components import AnimatedStatusBarConfig as AnimatedStatusBarConfig
 from .components import Counter as Counter
 from .components import CounterConfig as CounterConfig
+from .components import EngineConfig as EngineConfig
 from .components import Header as Header
 from .components import HeaderConfig as HeaderConfig
 from .components import Link as Link
@@ -10,6 +11,8 @@ from .components import MultilineText as MultilineText
 from .components import MultilineTextConfig as MultilineTextConfig
 from .components import ProgressBar as ProgressBar
 from .components import ProgressBarConfig as ProgressBarConfig
+from .components import Section as Section
+from .components import SectionConfig as SectionConfig
 from .components import Spinner as Spinner
 from .components import SpinnerConfig as SpinnerConfig
 from .components import StatusBar as StatusBar
@@ -17,7 +20,6 @@ from .components import StatusBarConfig as StatusBarConfig
 from .components import Table as Table
 from .components import TableConfig as TableConfig
 from .components import Terminal as Terminal
-from .components import action as action
 from .components import Text as Text
 from .components import TextConfig as TextConfig
 from .components import Timer as Timer
@@ -26,3 +28,4 @@ from .components import TotalRate as TotalRate
 from .components import TotalRateConfig as TotalRateConfig
 from .components import WindowedRate as WindowedRate
 from .components import WindowedRateConfig as WindowedRateConfig
+from .components import action as action

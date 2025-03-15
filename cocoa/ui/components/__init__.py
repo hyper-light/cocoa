@@ -16,6 +16,8 @@ from .status_bar import StatusBar as StatusBar
 from .status_bar import StatusBarConfig as StatusBarConfig
 from .table import Table as Table
 from .table import TableConfig as TableConfig
+from .terminal import Section as Section
+from .terminal import SectionConfig as SectionConfig
 from .terminal import Terminal as Terminal
 from .terminal import action as action
 from .text import Text as Text
