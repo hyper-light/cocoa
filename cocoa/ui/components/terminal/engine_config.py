@@ -1,4 +1,5 @@
 from pydantic import BaseModel, StrictFloat, StrictInt
+
 from .refresh_rate import RefreshRateProfile
 
 

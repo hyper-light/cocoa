@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hyperlight-cocoa"
-version = "0.1.6"
+version = "0.1.7"
 requires-python = ">=3.11"
 description = "Create beautiful, performant terminal UI and CLI apps."
 readme = "README.md"
