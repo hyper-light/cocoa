@@ -49,14 +49,13 @@ class Letters:
         font: str = "cyberpunk",
     ):
         self._fonts = {
-            "cyberpunk": create_cyberpunk,
             "bubbles": create_bubbles,
+            "cyberpunk": create_cyberpunk,
         }
-
         self._alphabet: dict[str, str] = self._fonts.get(
             font,
             create_cyberpunk,
-        )()
+        )
 
     def __iter__(self):
         for plaintext_letter, ascii_letter in self._alphabet.items():
