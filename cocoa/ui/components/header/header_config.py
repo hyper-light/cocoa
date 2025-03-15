@@ -3,7 +3,7 @@ from cocoa.ui.styling.colors import Colorizer, HighlightColorizer
 from cocoa.ui.styling.attributes import Attributizer
 from cocoa.ui.config.mode import TerminalDisplayMode
 from typing import Dict, List, Literal
-from .font import FormatterSet, SupportedLetters
+from .letters import FormatterSet, SupportedLetters
 
 
 HeaderHorizontalAlignment = Literal["left", "center", "right"]

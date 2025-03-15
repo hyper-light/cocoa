@@ -6,7 +6,7 @@ from cocoa.ui.styling import stylize, get_style
 from typing import Any
 
 from .header_config import HeaderConfig
-from .font import (
+from .letters import (
     FormattedWord,
     Word,
 )
