@@ -2,10 +2,10 @@ import asyncio
 import time
 from typing import List
 
-from cocoa.core.engines.client.time_parser import TimeParser
 from cocoa.ui.config.mode import TerminalMode
 from cocoa.ui.config.widget_fit_dimensions import WidgetFitDimensions
-from cocoa.ui.styling import stylize, get_style
+from cocoa.ui.styling import get_style, stylize
+from cocoa.utils import TimeParser
 
 from .windowed_rate_config import WindowedRateConfig
 
