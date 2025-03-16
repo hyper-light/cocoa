@@ -1,9 +1,20 @@
 import inspect
+from typing import (
+    Any,
+    Callable,
+    Generic,
+    Literal,
+    TypeVar,
+    get_args,
+    get_origin,
+)
+
 from cocoa.cli.arg_types.data_types import (
     AssertSet,
     Context,
     Env,
-    ImportFile,
+    ImportInstance,
+    ImportType,
     JsonData,
     JsonFile,
     Paths,
@@ -12,16 +23,6 @@ from cocoa.cli.arg_types.data_types import (
 )
 from cocoa.cli.arg_types.data_types.reduce_pattern_type import reduce_pattern_type
 from cocoa.cli.arg_types.operators import Operator
-from typing import (
-    Literal,
-    Generic,
-    TypeVar,
-    Any,
-    Callable,
-    get_args,
-    get_origin,
-)
-
 
 KeywordArgType = Literal["keyword", "flag"]
 
@@ -59,7 +60,8 @@ class KeywordArg(Generic[T]):
             AssertSet
             | Context
             | Env
-            | ImportFile
+            | ImportInstance
+            | ImportType
             | JsonData
             | JsonData
             | Operator
@@ -71,7 +73,8 @@ class KeywordArg(Generic[T]):
                 AssertSet
                 | Context
                 | Env
-                | ImportFile
+                | ImportInstance
+                | ImportType
                 | JsonData
                 | JsonData
                 | Operator
@@ -83,7 +86,8 @@ class KeywordArg(Generic[T]):
             AssertSet: lambda name, subtype: AssertSet(name, subtype),
             Context: lambda _, __: Context(),
             Env: lambda envar, subtype: Env(envar, subtype),
-            ImportFile: lambda _, subtype: ImportFile(subtype),
+            ImportInstance: lambda _, subtype: ImportInstance(subtype),
+            ImportType: lambda _, subtype: ImportType(subtype),
             JsonFile: lambda _, subtype: JsonFile(subtype),
             JsonData: lambda _, subtype: JsonData(subtype),
             Operator: lambda name, subtype: Operator(name, subtype),
@@ -128,9 +132,7 @@ class KeywordArg(Generic[T]):
         self.group = group
         self.arg_type: KeywordArgType = arg_type
         self._data_type = [
-            subtype_type.__name__ 
-            if hasattr(subtype_type, '__name__') 
-            else subtype_type 
+            subtype_type.__name__ if hasattr(subtype_type, "__name__") else subtype_type
             for subtype_type in base_type
         ]
 
@@ -171,7 +173,7 @@ class KeywordArg(Generic[T]):
                 complex_type.data = default_value
 
                 return complex_type
-            
+
         return default_value
 
     def to_flag(self):

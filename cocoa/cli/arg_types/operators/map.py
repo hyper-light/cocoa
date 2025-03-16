@@ -1,22 +1,22 @@
 from __future__ import annotations
+
 import asyncio
-from typing import Generic, TypeVarTuple, Any, get_args, get_origin, TypeVar, Callable
-
-
-T = TypeVarTuple("T")
-K = TypeVar("K")
-
+from typing import Any, Callable, Generic, TypeVar, TypeVarTuple, get_args, get_origin
 
 from cocoa.cli.arg_types.data_types import (
     AssertSet,
     Env,
-    ImportFile,
+    ImportInstance,
+    ImportType,
     JsonData,
     JsonFile,
     Paths,
     Pattern,
     RawFile,
 )
+
+T = TypeVarTuple("T")
+K = TypeVar("K")
 
 
 class Map(Generic[*T]):
@@ -39,15 +39,30 @@ class Map(Generic[*T]):
         self.data: Any | None = None
 
         self._complex_types: dict[
-            AssertSet | Env | ImportFile | JsonData | JsonData | Pattern | RawFile,
+            AssertSet
+            | Env
+            | ImportInstance
+            | ImportType
+            | JsonData
+            | JsonData
+            | Pattern
+            | RawFile,
             Callable[
                 [str, type[Any]],
-                AssertSet | Env | ImportFile | JsonData | JsonData | Pattern | RawFile,
+                AssertSet
+                | Env
+                | ImportInstance
+                | ImportType
+                | JsonData
+                | JsonData
+                | Pattern
+                | RawFile,
             ],
         ] = {
             AssertSet: lambda name, subtype: AssertSet(name, subtype),
             Env: lambda envar, subtype: Env(envar, subtype),
-            ImportFile: lambda _, subtype: ImportFile(subtype),
+            ImportInstance: lambda _, subtype: ImportInstance(subtype),
+            ImportType: lambda _, subtype: ImportType(subtype),
             JsonFile: lambda _, subtype: JsonFile(subtype),
             JsonData: lambda _, subtype: JsonData(subtype),
             Paths: lambda _, subtype: Paths(subtype),

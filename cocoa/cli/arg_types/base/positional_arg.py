@@ -1,8 +1,18 @@
+from typing import (
+    Any,
+    Callable,
+    Generic,
+    TypeVar,
+    get_args,
+    get_origin,
+)
+
 from cocoa.cli.arg_types.data_types import (
     AssertSet,
     Context,
     Env,
-    ImportFile,
+    ImportInstance,
+    ImportType,
     JsonData,
     JsonFile,
     Paths,
@@ -10,16 +20,6 @@ from cocoa.cli.arg_types.data_types import (
     RawFile,
 )
 from cocoa.cli.arg_types.operators import Operator
-from typing import (
-    Literal,
-    Generic,
-    TypeVar,
-    Any,
-    Callable,
-    get_args,
-    get_origin,
-)
-
 
 T = TypeVar("T")
 
@@ -44,7 +44,8 @@ class PositionalArg(Generic[T]):
             AssertSet
             | Context
             | Env
-            | ImportFile
+            | ImportInstance
+            | ImportType
             | JsonData
             | JsonData
             | Operator
@@ -56,7 +57,8 @@ class PositionalArg(Generic[T]):
                 AssertSet
                 | Context
                 | Env
-                | ImportFile
+                | ImportInstance
+                | ImportType
                 | JsonData
                 | JsonData
                 | Operator
@@ -68,7 +70,8 @@ class PositionalArg(Generic[T]):
             AssertSet: lambda name, subtype: AssertSet(name, subtype),
             Context: lambda _, __: Context(),
             Env: lambda envar, subtype: Env(envar, subtype),
-            ImportFile: lambda _, subtype: ImportFile(subtype),
+            ImportInstance: lambda _, subtype: ImportInstance(subtype),
+            ImportType: lambda _, subtype: ImportType(subtype),
             JsonFile: lambda _, subtype: JsonFile(subtype),
             JsonData: lambda _, subtype: JsonData(subtype),
             Operator: lambda name, subtype: Operator(name, subtype),
