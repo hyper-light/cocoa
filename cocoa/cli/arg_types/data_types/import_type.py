@@ -13,10 +13,10 @@ from .reduce_pattern_type import reduce_pattern_type
 T = TypeVar("T")
 
 
-class ImportFile(Generic[T]):
+class ImportType(Generic[T]):
     def __init__(
         self,
-        data_type: ImportFile[T],
+        data_type: ImportType[T],
     ):
         super().__init__()
         self.data: dict[str, T] | None = None
@@ -41,7 +41,7 @@ class ImportFile(Generic[T]):
         return ", ".join(self._data_types)
 
     async def parse(self, arg: str | None = None):
-        result = await self._import_class_declarations(arg)
+        result = await self._import_types(arg)
         if isinstance(result, Exception):
             return result
 
@@ -49,7 +49,7 @@ class ImportFile(Generic[T]):
 
         return self
 
-    async def _import_class_declarations(self, arg: str | None):
+    async def _import_types(self, arg: str | None):
         try:
             if arg is None:
                 return Exception("no argument passed for filepath")
