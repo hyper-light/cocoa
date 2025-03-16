@@ -1,8 +1,9 @@
+import textwrap
 from typing import Callable, List
 
-from .letters import Letters
 from .formatted_letter import FormattedLetter
 from .formatted_word import FormattedWord
+from .letters import Letters
 
 Formatter = Callable[[str, int], str]
 FormatterSet = List[Formatter]
@@ -21,7 +22,7 @@ class Word:
     ):
         letters = [
             self._lettering.get_letter(char)
-            for char in self._plaintext_word
+            for idx, char in enumerate(self._plaintext_word)
             if char in self._lettering
         ]
 
@@ -52,12 +53,15 @@ class Word:
             width_offset = word_width - max_width
 
         ascii_lines = [
-            word_lines[idx][width_offset:] for idx in range(height_offset, word_height)
+            word_lines[idx][: word_width - width_offset]
+            for idx in range(height_offset, word_height)
         ]
 
         return FormattedWord(
             plaintext_word=self._plaintext_word,
-            ascii="\n".join(ascii_lines),
+            ascii=textwrap.dedent(
+                "\n".join(ascii_lines),
+            ),
             ascii_lines=ascii_lines,
             height=word_height,
             width=max([len(line) for line in word_lines]),
@@ -85,3 +89,11 @@ class Word:
                 [len(line) for line in formatted_letter_lines],
             ),
         )
+
+    def _format_adjacent(
+        self,
+        letter_line: str,
+        next_letter_line: str,
+        letter_idx: int,
+    ):
+        return letter_line
