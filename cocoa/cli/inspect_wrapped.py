@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import inspect
 
-from typing import Any, Callable
-
+from typing import Any, Callable, get_args
+from types import UnionType
 from .arg_types import (
     Context,
     KeywordArg,
     PositionalArg,
+    KeywordArgType,
+    
 )
 from .help_message import create_help_string, CLIStyle
 
@@ -94,7 +96,20 @@ def inspect_wrapped(
             if arg_type == "flag" and arg_attrs.default is None:
                 arg_default = False
 
-            required = True if arg_attrs.default is None else False
+            args_types = []
+            for annotation in annotations:
+                if type(annotation) is UnionType:
+                    args_types.extend(get_args(annotation))
+
+                else:
+                    args_types.append(annotation)
+
+            no_default = arg_attrs.default is None
+            none_not_preset = len([
+                arg_type for arg_type in args_types if arg_type is type(None)
+            ]) == 0
+
+            required = no_default and none_not_preset
 
             keyword_arg = KeywordArg(
                 arg_name,
