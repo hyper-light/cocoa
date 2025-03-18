@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import inspect
 
-from typing import Any, Callable, get_args
+from typing import Any, Callable, get_args, get_origin
 from types import UnionType
 from .arg_types import (
     Context,
@@ -69,6 +69,15 @@ def inspect_wrapped(
     position_index: int = 0
 
     for arg_name, arg_attrs in call_args.parameters.items():
+
+        is_multiarg = arg_attrs.annotation in [
+            list,
+            set,
+        ] or get_origin(arg_attrs.annotation) in [
+            list,
+            set,
+        ]
+
         if (
             arg_attrs.default == inspect._empty
             and arg_attrs.annotation == inspect._empty
@@ -82,6 +91,7 @@ def inspect_wrapped(
                 arg_name,
                 position_index,
                 arg_attrs.annotation,
+                is_multiarg=is_multiarg,
                 is_context_arg=Context == arg_attrs.annotation,
             )
 
@@ -111,6 +121,7 @@ def inspect_wrapped(
 
             required = no_default and none_not_preset
 
+
             keyword_arg = KeywordArg(
                 arg_name,
                 arg_attrs.annotation,
@@ -118,6 +129,7 @@ def inspect_wrapped(
                 required=required,
                 default=arg_default,
                 arg_type=arg_type,
+                is_multiarg=is_multiarg,
                 is_context_arg=Context == arg_attrs.annotation,
             )
 

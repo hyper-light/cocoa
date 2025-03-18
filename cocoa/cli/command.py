@@ -86,6 +86,7 @@ class Command(Generic[T]):
         self.keyword_args_map = keyword_args_map
         self.keyword_args_count = len(keyword_args_map)
         self.positional_args_count = len(positional_args)
+        self._consumed_keywords: list[str] = []
         self._loop = asyncio.get_event_loop()
 
     @property
@@ -322,7 +323,11 @@ class Command(Generic[T]):
 
             elif (
                 positional_arg := positional_args_map.get(positional_idx)
-            ) and idx not in consumed_idxs:
+            ) and (
+                idx not in consumed_idxs
+            ) and (
+                positional_arg.is_multiarg is False
+            ):
                 positional_args, error = await self._consume_positional_value(
                     arg,
                     positional_arg,
@@ -332,6 +337,31 @@ class Command(Generic[T]):
                 positional_idx += 1
 
                 consumed_idxs.add(idx)
+
+            elif (
+                positional_arg := positional_args_map.get(positional_idx)
+            ) and (
+                idx not in consumed_idxs
+            ) and (
+                positional_arg.is_multiarg
+            ):
+                (
+                    positional_args, 
+                    error,
+                    consumed,
+                ) = await self._consume_multiarg_positional_value(
+                    arg,
+                    positional_arg,
+                    positional_args,
+                    keyword_args_map,
+                    cli_args[idx + 1 :],
+                    idx,
+                )
+
+                positional_idx += len(consumed)
+
+                for consumed_idx in consumed:
+                    consumed_idxs.add(consumed_idx)
 
             if error:
                 errors.append(error)
@@ -381,6 +411,42 @@ class Command(Generic[T]):
             positional_args,
             None,
         )
+    
+    async def _consume_multiarg_positional_value(
+        self,
+        arg: str,
+        positional_arg: PositionalArg,
+        positional_args: list[Any],
+        keyword_args_map: dict[str, KeywordArg],
+        args: list[str],
+        idx: int,
+    ):
+        consumed = set([idx])
+
+        for arg_idx, arg in enumerate(args):
+            if keyword_args_map.get(arg):
+                break
+            
+            positional_args, error = await self._consume_positional_value(
+                arg,
+                positional_arg,
+                positional_args,
+            )
+
+            if error:
+                return (
+                    positional_args,
+                    error,
+                    consumed,
+                )
+
+            consumed.add(idx + arg_idx + 1)
+
+        return (
+            positional_args,
+            error,
+            consumed,
+        )
 
     async def _consume_keyword_value(
         self,
@@ -389,6 +455,13 @@ class Command(Generic[T]):
         keyword_arg: KeywordArg,
         consumed_idxs: set[int],
     ):
+        if keyword_arg.is_multiarg is False and keyword_arg.name in self._consumed_keywords:
+            return (
+                None,
+                Exception(f'{keyword_arg.full_flag} may only be specified once'),
+                consumed_idxs,
+            )
+
         if keyword_arg.arg_type == "flag":
             return (
                 True,

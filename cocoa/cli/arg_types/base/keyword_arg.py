@@ -41,6 +41,7 @@ class KeywordArg(Generic[T]):
         required: bool = True,
         arg_type: KeywordArgType = "keyword",
         description: str | None = None,
+        is_multiarg: bool = False,
         is_context_arg: bool = False,
     ):
         if short_name is None:
@@ -49,6 +50,7 @@ class KeywordArg(Generic[T]):
         self.name = name
         self.short_name = short_name
         self.is_context_arg = is_context_arg
+        self.is_multiarg = is_multiarg
 
         full_flag = "-".join(name.split("_"))
 

@@ -31,11 +31,13 @@ class PositionalArg(Generic[T]):
         index: int,
         data_type: type[T],
         description: str | None = None,
+        is_multiarg: bool = False,
         is_context_arg: bool = False,
     ):
         self.name = name
         self.index = index
         self.is_context_arg = is_context_arg
+        self.is_multiarg = is_multiarg
 
         self.is_envar: bool = False
 
