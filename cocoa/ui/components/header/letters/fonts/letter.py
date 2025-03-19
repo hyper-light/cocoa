@@ -1,22 +1,23 @@
 import textwrap
 from typing import Literal
 
+from .formatted_letter import FormattedLetter
+
 Formatting = Literal["start", "end", "both"]
 
 
 class Letter:
     def __init__(
         self,
-        ascii: str,
+        plain_text: str,
+        ascii_text: str,
     ):
-        self.ascii = ascii
+        self.plaintext = plain_text
+        self.ascii = ascii_text
         self.height: int = 0
         self.width: int = 0
 
-    def format(
-        self,
-        last_letter: bool = False,
-    ):
+    def format(self):
         ascii_lines = [
             line.rstrip()
             for line in textwrap.dedent(
@@ -38,4 +39,9 @@ class Letter:
 
         self.height = len(ascii_lines)
 
-        return "\n".join(ascii_lines)
+        return FormattedLetter(
+            plaintext_letter=self.plaintext,
+            ascii="\n".join(ascii_lines),
+            height=self.height,
+            width=self.width,
+        )

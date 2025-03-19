@@ -1,9 +1,9 @@
-import asyncio
 import math
+from typing import Any
+
 from cocoa.ui.config.mode import TerminalMode
 from cocoa.ui.config.widget_fit_dimensions import WidgetFitDimensions
-from cocoa.ui.styling import stylize, get_style
-from typing import Any
+from cocoa.ui.styling import get_style, stylize
 
 from .header_config import HeaderConfig
 from .letters import (
@@ -28,7 +28,10 @@ class Header:
         self._config = config
         self.subscriptions = subscriptions
 
-        self._word = Word(self._config.header_text)
+        self._word = Word(
+            self._config.header_text,
+            font=config.font,
+        )
 
         self._styled_header_lines: list[str] | None = None
         self._formatted_word: FormattedWord | None = None

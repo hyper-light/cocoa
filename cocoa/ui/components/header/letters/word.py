@@ -1,18 +1,22 @@
 import textwrap
 from typing import Callable, List
 
-from .formatted_letter import FormattedLetter
+from .fonts import Alphabet, FormattedLetter, SupportedFonts
 from .formatted_word import FormattedWord
-from .letters import Letters
 
 Formatter = Callable[[str, int], str]
 FormatterSet = List[Formatter]
 
 
 class Word:
-    def __init__(self, plaintext_word: str):
+    def __init__(
+        self,
+        plaintext_word: str,
+        font: SupportedFonts = "cyberpunk",
+    ):
         self._plaintext_word = plaintext_word
-        self._lettering = Letters()
+        self._alphabet = Alphabet(font=font)
+        self.font = font
 
     def to_ascii(
         self,
@@ -20,13 +24,14 @@ class Word:
         max_width: int | None = None,
         max_height: int | None = None,
     ):
-        letters = [
-            self._lettering.get_letter(char)
-            for idx, char in enumerate(self._plaintext_word)
-            if char in self._lettering
+        letters: list[FormattedLetter] = [
+            self._alphabet.get_letter(char)
+            for _, char in enumerate(self._plaintext_word)
+            if self._alphabet.get_letter(char) is not None
         ]
 
         word_lines: list[str] = []
+        last_letter_idx = len(letters) - 1
         for letter_idx, letter in enumerate(letters):
             if formatter_set:
                 letter = self._apply_formatters(
@@ -36,6 +41,9 @@ class Word:
                 )
 
             for line_idx, letter_line in enumerate(letter.ascii.split("\n")):
+                if letter_idx < last_letter_idx:
+                    letter_line += " " * self._alphabet.spacing
+
                 if line_idx >= len(word_lines):
                     word_lines.append(letter_line)
 
@@ -65,6 +73,7 @@ class Word:
             ascii_lines=ascii_lines,
             height=word_height,
             width=max([len(line) for line in word_lines]),
+            font=self.font,
         )
 
     def _apply_formatters(

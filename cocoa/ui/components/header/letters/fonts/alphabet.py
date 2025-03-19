@@ -1,7 +1,8 @@
 from typing import Literal
 
-from .fonts import Letter, create_bubbles, create_cyberpunk
-from .formatted_letter import FormattedLetter
+from .bubbles import create_bubbles
+from .cyberpunk import create_cyberpunk
+from .letter import Letter
 
 SupportedLetters = Literal[
     "a",
@@ -43,33 +44,40 @@ SupportedLetters = Literal[
 ]
 
 
-class Letters:
+SupportedFonts = Literal[
+    "bubbles",
+    "cyberpunk",
+]
+
+
+class Alphabet:
     def __init__(
         self,
-        font: str = "cyberpunk",
+        font: SupportedFonts = "cyberpunk",
     ):
         self._fonts = {
             "bubbles": create_bubbles,
             "cyberpunk": create_cyberpunk,
         }
 
-        font_set = self._fonts.get(
-            font,
-            create_cyberpunk,
-        )()
+        spacing, letters = self._fonts.get(font, create_cyberpunk)()
 
-        self._alphabet: dict[str, Letter] = font_set.font
+        self._alphabet = {
+            plain_text: Letter(
+                plain_text,
+                ascii_text,
+            )
+            for plain_text, ascii_text in letters.items()
+        }
+
+        self.font = font
+        self.spacing = spacing
 
     def __iter__(self):
         for plaintext_letter, ascii_letter in self._alphabet.items():
             yield (
                 plaintext_letter,
-                FormattedLetter(
-                    plaintext_letter=plaintext_letter,
-                    ascii=ascii_letter.format(),
-                    height=ascii_letter.height,
-                    width=ascii_letter.width,
-                ),
+                ascii_letter.format(),
             )
 
     def __contains__(self, plaintext_letter: str):
@@ -81,9 +89,4 @@ class Letters:
         if selected_letter is None:
             return selected_letter
 
-        return FormattedLetter(
-            plaintext_letter=plaintext_letter,
-            ascii=selected_letter.format(),
-            height=selected_letter.height,
-            width=selected_letter.width,
-        )
+        return selected_letter.format()

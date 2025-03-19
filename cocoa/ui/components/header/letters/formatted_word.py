@@ -1,5 +1,8 @@
-from pydantic import BaseModel, StrictStr, StrictInt
 from typing import List
+
+from pydantic import BaseModel, StrictInt, StrictStr
+
+from .fonts import SupportedFonts
 
 
 class FormattedWord(BaseModel):
@@ -8,3 +11,4 @@ class FormattedWord(BaseModel):
     ascii_lines: List[StrictStr]
     height: StrictInt
     width: StrictInt
+    font: SupportedFonts
