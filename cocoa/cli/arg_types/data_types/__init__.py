@@ -1,3 +1,4 @@
+from .assert_path import AssertPath as AssertPath
 from .assert_set import AssertSet as AssertSet
 from .context import Context as Context
 from .env import Env as Env

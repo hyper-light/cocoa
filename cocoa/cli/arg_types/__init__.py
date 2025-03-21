@@ -5,6 +5,7 @@ from .base import is_defaultable as is_defaultable
 from .base import is_env_defaultable as is_env_defaultable
 from .base import is_required_missing_keyword_arg as is_required_missing_keyword_arg
 from .base import is_unsupported_keyword_arg as is_unsupported_keyword_arg
+from .data_types import AssertPath as AssertPath
 from .data_types import AssertSet as AssertSet
 from .data_types import Context as Context
 from .data_types import Env as Env

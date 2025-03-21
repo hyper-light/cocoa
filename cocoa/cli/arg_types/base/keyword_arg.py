@@ -10,6 +10,7 @@ from typing import (
 )
 
 from cocoa.cli.arg_types.data_types import (
+    AssertPath,
     AssertSet,
     Context,
     Env,
@@ -59,7 +60,8 @@ class KeywordArg(Generic[T]):
 
         args = get_args(data_type)
         self._complex_types: dict[
-            AssertSet
+            AssertPath
+            | AssertSet
             | Context
             | Env
             | ImportInstance
@@ -72,7 +74,8 @@ class KeywordArg(Generic[T]):
             | RawFile,
             Callable[
                 [str, type[Any]],
-                AssertSet
+                AssertPath
+                | AssertSet
                 | Context
                 | Env
                 | ImportInstance
@@ -85,6 +88,7 @@ class KeywordArg(Generic[T]):
                 | RawFile,
             ],
         ] = {
+            AssertPath: lambda _, __: AssertPath(),
             AssertSet: lambda name, subtype: AssertSet(name, subtype),
             Context: lambda _, __: Context(),
             Env: lambda envar, subtype: Env(envar, subtype),
@@ -132,7 +136,7 @@ class KeywordArg(Generic[T]):
 
         elif len(args) > 0:
             base_type = args
-            
+
         self.default = default
         self.group = group
         self.arg_type: KeywordArgType = arg_type

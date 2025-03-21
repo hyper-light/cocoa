@@ -4,6 +4,7 @@ import asyncio
 from typing import Any, Callable, Generic, TypeVar, TypeVarTuple, get_args, get_origin
 
 from cocoa.cli.arg_types.data_types import (
+    AssertPath,
     AssertSet,
     Env,
     ImportInstance,
@@ -39,7 +40,8 @@ class Chain(Generic[*T]):
         self.data: Any | None = None
 
         self._complex_types: dict[
-            AssertSet
+            AssertPath
+            | AssertSet
             | Env
             | ImportInstance
             | ImportType
@@ -49,7 +51,8 @@ class Chain(Generic[*T]):
             | RawFile,
             Callable[
                 [str, type[Any]],
-                AssertSet
+                AssertPath
+                | AssertSet
                 | Env
                 | ImportInstance
                 | ImportType
@@ -59,6 +62,7 @@ class Chain(Generic[*T]):
                 | RawFile,
             ],
         ] = {
+            AssertPath: lambda _, __: AssertPath(),
             AssertSet: lambda name, subtype: AssertSet(name, subtype),
             Env: lambda envar, subtype: Env(envar, subtype),
             ImportInstance: lambda _, subtype: ImportInstance(subtype),

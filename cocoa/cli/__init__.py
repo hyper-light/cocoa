@@ -1,3 +1,4 @@
+from .arg_types import AssertPath as AssertPath
 from .arg_types import AssertSet as AssertSet
 from .arg_types import Chain as Chain
 from .arg_types import Context as Context

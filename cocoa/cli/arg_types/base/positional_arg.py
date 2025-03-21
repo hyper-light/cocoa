@@ -8,6 +8,7 @@ from typing import (
 )
 
 from cocoa.cli.arg_types.data_types import (
+    AssertPath,
     AssertSet,
     Context,
     Env,
@@ -44,7 +45,8 @@ class PositionalArg(Generic[T]):
 
         args = get_args(data_type)
         self._complex_types: dict[
-            AssertSet
+            AssertPath
+            | AssertSet
             | Context
             | Env
             | ImportInstance
@@ -57,7 +59,8 @@ class PositionalArg(Generic[T]):
             | RawFile,
             Callable[
                 [str, type[Any]],
-                AssertSet
+                AssertPath
+                | AssertSet
                 | Context
                 | Env
                 | ImportInstance
@@ -70,6 +73,7 @@ class PositionalArg(Generic[T]):
                 | RawFile,
             ],
         ] = {
+            AssertPath: lambda _, __: AssertPath(),
             AssertSet: lambda name, subtype: AssertSet(name, subtype),
             Context: lambda _, __: Context(),
             Env: lambda envar, subtype: Env(envar, subtype),
@@ -110,7 +114,7 @@ class PositionalArg(Generic[T]):
 
         elif len(args) > 0:
             base_type = args
-            
+
         self._data_type = [
             subtype_type.__name__ if hasattr(subtype_type, "__name__") else subtype_type
             for subtype_type in base_type
