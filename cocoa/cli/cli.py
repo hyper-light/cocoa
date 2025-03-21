@@ -120,6 +120,12 @@ class CLI:
                         command._global_styles = cls._global_styles
                         group.subgroups[command.group_name] = command
 
+                        for subcommand in command.subcommands.values():
+                            subcommand._global_styles = cls._global_styles
+
+                        for subgroup in command.subgroups.values():
+                            subgroup._global_styles = cls._global_styles
+
                     elif isinstance(command, Command):
                         command._global_styles = cls._global_styles
                         group.subcommands[command.command_name] = command

@@ -31,6 +31,28 @@ from .inspect_wrapped import inspect_wrapped, assemble_exanded_args, is_context_
 T = TypeVar("T", bound=dict)
 K = TypeVar("K")
 
+def group(
+    *commands: list[Group | Command],
+    styling: CLIStyle | None = None,
+    shortnames: dict[str, str] | None = None,
+):
+    if shortnames is None:
+        shortnames = {}
+
+    def wrap(command):
+        group = create_group(command, styling=styling, shortnames=shortnames)
+
+        for command in commands:
+            if isinstance(command, Group):
+                group.subgroups[command.group_name] = command
+
+            elif isinstance(command, Command):
+                group.subcommands[command.command_name] = command
+
+        return group
+
+    return wrap
+
 
 def create_group(
     command_call: Callable[..., Any],
@@ -202,6 +224,12 @@ class Group(Generic[T]):
                 if isinstance(command, Group):
                     command._global_styles = self._global_styles
                     group.subgroups[command.group_name] = command
+
+                    for subcommand in command.subcommands.values():
+                        subcommand._global_styles = self._global_styles
+
+                    for subgroup in command.subgroups.values():
+                        subgroup._global_styles = self._global_styles
 
                 elif isinstance(command, Command):
                     command._global_styles = self._global_styles

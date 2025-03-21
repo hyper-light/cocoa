@@ -61,6 +61,24 @@ def create_command(
     )
 
 
+def command(
+    styling: CLIStyle | None = None,
+    shortnames: dict[str, str] | None = None,
+):
+    if shortnames is None:
+        shortnames = {}
+
+    def wrap(command_call):
+
+        return create_command(
+            command_call,
+            styling=styling,
+            shortnames=shortnames,
+        )
+
+    return wrap
+
+
 class Command(Generic[T]):
     def __init__(
         self,
