@@ -488,10 +488,10 @@ class Group(Generic[T]):
                 positional_idx += 1
 
                 consumed_idxs.add(idx)
-                
+
             else:
                 errors.append(
-                    f'{arg} is not a recognized command or subcommand'
+                    f'{arg} is not a recognized option or command'
                 )
 
             if error:

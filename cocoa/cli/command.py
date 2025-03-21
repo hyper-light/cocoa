@@ -381,6 +381,11 @@ class Command(Generic[T]):
                 for consumed_idx in consumed:
                     consumed_idxs.add(consumed_idx)
 
+            else:
+                errors.append(
+                    f'{arg} is not a recognized option'
+                )
+
             if error:
                 errors.append(error)
                 return (
