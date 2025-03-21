@@ -94,6 +94,7 @@ class CLI:
     @classmethod
     def group(
         cls,
+        *commands: list[Group | Command],
         styling: CLIStyle | None = None,
         shortnames: dict[str, str] | None = None,
     ):
@@ -108,12 +109,23 @@ class CLI:
                 )(command)
 
             else:
-                return create_group(
+                group = create_group(
                     command,
                     styling=styling,
                     shortnames=shortnames,
                 )
 
+                for command in commands:
+                    if isinstance(command, Group):
+                        command._global_styles = cls._global_styles
+                        group.subgroups[command.group_name] = command
+
+                    elif isinstance(command, Command):
+                        command._global_styles = cls._global_styles
+                        group.subcommands[command.command_name] = command
+
+                return group
+            
         return wrap
 
     @classmethod

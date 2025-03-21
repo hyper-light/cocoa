@@ -186,6 +186,7 @@ class Group(Generic[T]):
 
     def group(
         self,
+        *commands: list[Group | Command],
         styling: CLIStyle | None = None,
         shortnames: dict[str, str] | None = None,
     ):
@@ -196,6 +197,15 @@ class Group(Generic[T]):
             group = create_group(command, styling=styling, shortnames=shortnames)
 
             self.subgroups[group.group_name] = group
+
+            for command in commands:
+                if isinstance(command, Group):
+                    command._global_styles = self._global_styles
+                    group.subgroups[command.group_name] = command
+
+                elif isinstance(command, Command):
+                    command._global_styles = self._global_styles
+                    group.subcommands[command.command_name] = command
 
             return group
 
