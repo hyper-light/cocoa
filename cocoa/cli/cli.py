@@ -28,7 +28,7 @@ class CLI:
 
         context = Context()
 
-        if len(args) > 0:
+        if len(args) > 0 and args[1]:
             return await cls._entrypoint.run(args, context)
         
         subcommands: list[str] | None = None
