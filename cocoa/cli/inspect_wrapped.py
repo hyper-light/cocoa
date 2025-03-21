@@ -1,6 +1,12 @@
 import inspect
-from typing import Any, Callable, get_args, get_origin
-from types import UnionType, Literal
+from typing import (
+    Any, 
+    Callable, 
+    get_args, 
+    get_origin, 
+    Literal,
+)
+from types import UnionType
 from .arg_types import (
     Context,
     KeywordArg,
