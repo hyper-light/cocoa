@@ -193,7 +193,11 @@ class KeywordArg(Generic[T]):
 
         for subtype in self._value_type:
             try:
-                if complex_type_factory := self._complex_types.get(get_origin(subtype)):
+                if (
+                    complex_type_factory := self._complex_types.get(get_origin(subtype))
+                ) or (
+                    complex_type_factory := self._complex_types.get(subtype)
+                ):
                     complex_type = complex_type_factory(self.name, subtype)
 
                     return await complex_type.parse(value)
