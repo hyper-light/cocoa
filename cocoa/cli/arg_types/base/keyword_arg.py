@@ -130,6 +130,9 @@ class KeywordArg(Generic[T]):
         if self._is_complex_type:
             base_type = reduce_pattern_type(data_type)
 
+        elif len(args) > 0:
+            base_type = args
+            
         self.default = default
         self.group = group
         self.arg_type: KeywordArgType = arg_type

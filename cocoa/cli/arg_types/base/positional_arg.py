@@ -108,11 +108,14 @@ class PositionalArg(Generic[T]):
         if self._is_complex_type:
             base_type = reduce_pattern_type(data_type)
 
+        elif len(args) > 0:
+            base_type = args
+            
         self._data_type = [
             subtype_type.__name__ if hasattr(subtype_type, "__name__") else subtype_type
             for subtype_type in base_type
         ]
-        
+
         self.description = description
 
     @property
