@@ -93,6 +93,7 @@ class Header:
             ascii_lines=padded_lines,
             height=self._formatted_word.height,
             width=self._max_width,
+            font=self._formatted_word.font,
         )
 
     def _pad_word_height(self):
