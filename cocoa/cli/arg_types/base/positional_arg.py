@@ -19,6 +19,7 @@ from cocoa.cli.arg_types.data_types import (
     Pattern,
     RawFile,
 )
+from cocoa.cli.arg_types.data_types.reduce_pattern_type import reduce_pattern_type
 from cocoa.cli.arg_types.operators import Operator
 
 T = TypeVar("T")
@@ -103,8 +104,15 @@ class PositionalArg(Generic[T]):
             > 0
         )
 
-        self._data_type = [subtype_type.__name__ for subtype_type in self.value_type]
+        base_type = [data_type]
+        if self._is_complex_type:
+            base_type = reduce_pattern_type(data_type)
 
+        self._data_type = [
+            subtype_type.__name__ if hasattr(subtype_type, "__name__") else subtype_type
+            for subtype_type in base_type
+        ]
+        
         self.description = description
 
     @property

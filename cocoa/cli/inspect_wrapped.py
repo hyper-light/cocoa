@@ -1,6 +1,6 @@
 import inspect
 from typing import Any, Callable, get_args, get_origin
-from types import UnionType
+from types import UnionType, Literal
 from .arg_types import (
     Context,
     KeywordArg,
@@ -105,6 +105,9 @@ def inspect_wrapped(
 
             args_types = []
             if get_origin(arg_attrs.annotation) is UnionType:
+                args_types.extend(get_args(arg_attrs.annotation))
+
+            elif get_origin(arg_attrs.annotation) is Literal:
                 args_types.extend(get_args(arg_attrs.annotation))
 
             else:
