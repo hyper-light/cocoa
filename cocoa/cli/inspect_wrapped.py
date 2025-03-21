@@ -1,7 +1,4 @@
-from __future__ import annotations
-
 import inspect
-
 from typing import Any, Callable, get_args, get_origin
 from types import UnionType
 from .arg_types import (
@@ -100,19 +97,18 @@ def inspect_wrapped(
         else:
             arg_type: KeywordArgType = "keyword"
             arg_default = arg_attrs.default
-            if isinstance(arg_attrs.default, bool) or arg_attrs.annotation == bool:
+            if isinstance(arg_attrs.default, bool) or arg_attrs.annotation is bool:
                 arg_type = "flag"
 
             if arg_type == "flag" and arg_attrs.default is None:
                 arg_default = False
 
             args_types = []
-            for annotation in annotations:
-                if type(annotation) is UnionType:
-                    args_types.extend(get_args(annotation))
+            if get_origin(arg_attrs.annotation) is UnionType:
+                args_types.extend(get_args(arg_attrs.annotation))
 
-                else:
-                    args_types.append(annotation)
+            else:
+                args_types.append(arg_attrs.annotation)
 
             no_default = arg_attrs.default is None
             none_not_preset = len([
