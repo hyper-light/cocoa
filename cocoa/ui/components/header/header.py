@@ -120,6 +120,7 @@ class Header:
             ascii_lines=word_lines,
             height=self._max_height,
             width=self._formatted_word.width,
+            font=self._config.font,
         )
 
     def _pad_top(
