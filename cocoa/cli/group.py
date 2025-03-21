@@ -235,7 +235,6 @@ class Group(Generic[T]):
             None, functools.partial(os.fdopen, stdout_dup, mode=sys.stdout.mode)
         )
 
-
     async def _print_group_help_message(
         self,
         subcommands: list[str],
