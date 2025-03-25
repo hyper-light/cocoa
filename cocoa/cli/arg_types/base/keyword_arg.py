@@ -186,7 +186,7 @@ class KeywordArg(Generic[T]):
         return default_value
 
     def to_flag(self):
-        return f"--{self.name}"
+        return self.full_flag
 
     async def parse(self, value: str | None = None):
         parse_error: Exception | None = None
