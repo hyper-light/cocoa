@@ -50,7 +50,7 @@ class Env(Generic[T]):
 
     async def _load_envar(self):
         value = await self._load()
-        if isinstance(value, None):
+        if value is None:
             return Exception(f"no envar matching {self._envar.upper()} found")
 
         for conversion_type in self._types:
