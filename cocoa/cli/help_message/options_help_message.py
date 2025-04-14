@@ -4,7 +4,6 @@ from typing import List
 from pydantic import BaseModel, StrictStr, StrictInt
 from cocoa.cli.arg_types import KeywordArg, Context
 from cocoa.ui.styling import stylize, get_style
-from cocoa.ui.styling.attributes import Attributizer
 
 from .cli_style import CLIStyle
 from .line_parsing import is_arg_descriptor

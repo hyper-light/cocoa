@@ -34,7 +34,7 @@ class TitleHelpMessage(BaseModel):
         if styles is None:
             styles = global_styles
 
-        command_name = self.command
+        command_name = self.command.replace('_', '-')
 
         if styles and styles.has_header_styles():
             command_name = await stylize(
