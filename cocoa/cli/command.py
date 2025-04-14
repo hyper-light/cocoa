@@ -446,6 +446,8 @@ class Command(Generic[T]):
     ):
         consumed = set([idx])
 
+        error: Exception | None = None
+
         for arg_idx, arg in enumerate(args):
             if keyword_args_map.get(arg):
                 break
