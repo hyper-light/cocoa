@@ -176,7 +176,11 @@ class KeywordArg(Generic[T]):
             default_value = self.default
 
         for subtype in self._value_type:
-            if complex_type_factory := self._complex_types.get(get_origin(subtype)):
+            if (
+                complex_type_factory := self._complex_types.get(get_origin(subtype))
+            ) or (
+                complex_type_factory := self._complex_types.get(subtype)
+            ):
                 complex_type = complex_type_factory(self.name, subtype)
 
                 complex_type.data = default_value
