@@ -51,10 +51,9 @@ class AssertPath:
             path = str(pathlib.Path(arg).absolute().resolve())
 
             if os.path.exists(path) is False:
-                return self, False
+                return path, False
 
-            self.data = path
-            return self, True
+            return path, True
 
         except Exception as e:
             return Exception(

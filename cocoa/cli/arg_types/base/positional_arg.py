@@ -156,7 +156,7 @@ class PositionalArg(Generic[T]):
 
                     return await complex_type.parse(value)
 
-                elif subtype == bytes:
+                elif subtype is bytes:
                     return bytes(value, encoding="utf-8")
 
                 return subtype(value)
