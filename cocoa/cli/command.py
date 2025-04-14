@@ -372,7 +372,7 @@ class Command(Generic[T]):
                     positional_arg,
                     positional_args,
                     keyword_args_map,
-                    cli_args[idx + 1 :],
+                    cli_args[idx:],
                     idx,
                 )
 
@@ -444,7 +444,7 @@ class Command(Generic[T]):
         args: list[str],
         idx: int,
     ):
-        consumed = set([idx])
+        consumed = set()
 
         error: Exception | None = None
 
@@ -465,7 +465,7 @@ class Command(Generic[T]):
                     consumed,
                 )
 
-            consumed.add(idx + arg_idx + 1)
+            consumed.add(idx + arg_idx)
 
         return (
             positional_args,
