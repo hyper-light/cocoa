@@ -32,6 +32,50 @@ T = TypeVar("T")
 
 
 class KeywordArg(Generic[T]):
+    complex_types: dict[
+        AssertPath
+        | AssertSet
+        | Context
+        | Env
+        | ImportInstance
+        | ImportType
+        | JsonData
+        | JsonData
+        | Operator
+        | Paths
+        | Pattern
+        | RawFile,
+        Callable[
+            [str, type[Any]],
+            AssertPath
+            | AssertSet
+            | Context
+            | Env
+            | ImportInstance
+            | ImportType
+            | JsonData
+            | JsonData
+            | Operator
+            | Paths
+            | Pattern
+            | RawFile,
+        ],
+    ] = {
+        AssertPath: lambda _, __: AssertPath(),
+        AssertSet: lambda name, subtype: AssertSet(name, subtype),
+        Context: lambda _, __: Context(),
+        Env: lambda envar, subtype: Env(envar, subtype),
+        ImportInstance: lambda _, subtype: ImportInstance(subtype),
+        ImportType: lambda _, subtype: ImportType(subtype),
+        JsonFile: lambda _, subtype: JsonFile(subtype),
+        JsonData: lambda _, subtype: JsonData(subtype),
+        Operator: lambda name, subtype: Operator(name, subtype),
+        Paths: lambda _, subtype: Paths(subtype),
+        Pattern: lambda _, subtype: Pattern(subtype),
+        RawFile: lambda _, subtype: RawFile(subtype),
+    }
+
+
     def __init__(
         self,
         name: str,
@@ -59,54 +103,12 @@ class KeywordArg(Generic[T]):
         self.short_flag = f"-{short_name}"
 
         args = get_args(data_type)
-        self._complex_types: dict[
-            AssertPath
-            | AssertSet
-            | Context
-            | Env
-            | ImportInstance
-            | ImportType
-            | JsonData
-            | JsonData
-            | Operator
-            | Paths
-            | Pattern
-            | RawFile,
-            Callable[
-                [str, type[Any]],
-                AssertPath
-                | AssertSet
-                | Context
-                | Env
-                | ImportInstance
-                | ImportType
-                | JsonData
-                | JsonData
-                | Operator
-                | Paths
-                | Pattern
-                | RawFile,
-            ],
-        ] = {
-            AssertPath: lambda _, __: AssertPath(),
-            AssertSet: lambda name, subtype: AssertSet(name, subtype),
-            Context: lambda _, __: Context(),
-            Env: lambda envar, subtype: Env(envar, subtype),
-            ImportInstance: lambda _, subtype: ImportInstance(subtype),
-            ImportType: lambda _, subtype: ImportType(subtype),
-            JsonFile: lambda _, subtype: JsonFile(subtype),
-            JsonData: lambda _, subtype: JsonData(subtype),
-            Operator: lambda name, subtype: Operator(name, subtype),
-            Paths: lambda _, subtype: Paths(subtype),
-            Pattern: lambda _, subtype: Pattern(subtype),
-            RawFile: lambda _, subtype: RawFile(subtype),
-        }
 
         self._is_complex_type = (
             get_origin(
                 data_type,
             )
-            in self._complex_types.keys()
+            in self.complex_types.keys()
         )
 
         if len(args) > 0 and self._is_complex_type is False:
@@ -177,9 +179,9 @@ class KeywordArg(Generic[T]):
 
         for subtype in self._value_type:
             if (
-                complex_type_factory := self._complex_types.get(get_origin(subtype))
+                complex_type_factory := self.complex_types.get(get_origin(subtype))
             ) or (
-                complex_type_factory := self._complex_types.get(subtype)
+                complex_type_factory := self.complex_types.get(subtype)
             ):
                 complex_type = complex_type_factory(self.name, subtype)
 
@@ -195,12 +197,38 @@ class KeywordArg(Generic[T]):
     async def parse(self, value: str | None = None):
         parse_error: Exception | None = None
 
-        for subtype in self._value_type:
+        if self.is_multiarg:
+            value_types = []
+            for subtype in self._value_type:
+                if subtype in [
+                    list,
+                    set,
+                ]:
+                    value_types.extend(subtype)
+
+                elif get_origin(subtype) in [
+                    list,
+                    set,
+                ]:
+                    value_types.extend(
+                        get_args(subtype)
+                    )
+
+                elif subtype:
+                    value_types.append(subtype)
+
+            return await self._parse(value, value_types)
+
+        return await self._parse(value, self._value_type)
+
+    async def _parse(self, value: str | None, value_types: list[Any]):
+
+        for subtype in value_types:
             try:
                 if (
-                    complex_type_factory := self._complex_types.get(get_origin(subtype))
+                    complex_type_factory := self.complex_types.get(get_origin(subtype))
                 ) or (
-                    complex_type_factory := self._complex_types.get(subtype)
+                    complex_type_factory := self.complex_types.get(subtype)
                 ):
                     complex_type = complex_type_factory(self.name, subtype)
 

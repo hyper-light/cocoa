@@ -381,7 +381,7 @@ class Command(Generic[T]):
                 for consumed_idx in consumed:
                     consumed_idxs.add(consumed_idx)
 
-            else:
+            elif idx not in consumed_idxs:
                 errors.append(
                     f'{arg} is not a recognized option'
                 )
@@ -493,6 +493,55 @@ class Command(Generic[T]):
                 None,
                 consumed_idxs,
             )
+        
+        if keyword_arg.is_multiarg:
+            values: list[Any] = []
+            
+            for idx, arg in enumerate(args):
+                if arg.startswith('-'):
+                    break
+
+                (
+                    value,
+                    error,
+                    consumed_idxs,
+                ) = await self._parse_keyword_value(
+                    current_idx + idx,
+                    [arg],
+                    keyword_arg,
+                    consumed_idxs,
+                )
+
+                if error:
+                    return (
+                        None,
+                        error,
+                        consumed_idxs,
+                    )
+
+                values.append(value)
+
+            return (
+                values,
+                None,
+                consumed_idxs,
+            )
+            
+        return await self._parse_keyword_value(
+            current_idx,
+            args,
+            keyword_arg,
+            consumed_idxs,
+        )
+        
+    
+    async def _parse_keyword_value(
+        self,
+        current_idx: int,
+        args: list[str],
+        keyword_arg: KeywordArg,
+        consumed_idxs: set[int],
+    ):
 
         value: Any | None = None
         value_idx = 0
@@ -519,6 +568,7 @@ class Command(Generic[T]):
         if value is None and keyword_arg.loads_from_envar:
             result = await keyword_arg.parse()
             value, last_error = self._return_value_and_error(result)
+            
 
         if value is None and isinstance(last_error, Exception):
             return (

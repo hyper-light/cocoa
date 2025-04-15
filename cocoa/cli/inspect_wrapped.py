@@ -14,6 +14,7 @@ from .arg_types import (
     KeywordArgType,
     
 )
+from .arg_types.data_types.check_if_multiarg import check_if_multiarg
 from .help_message import create_help_string, CLIStyle
 
 
@@ -72,14 +73,10 @@ def inspect_wrapped(
     position_index: int = 0
 
     for arg_name, arg_attrs in call_args.parameters.items():
-
-        is_multiarg = arg_attrs.annotation in [
-            list,
-            set,
-        ] or get_origin(arg_attrs.annotation) in [
-            list,
-            set,
-        ]
+        is_multiarg = check_if_multiarg(arg_attrs.annotation, [
+            *KeywordArg.complex_types,
+            *PositionalArg.complex_types
+        ])
 
         if (
             arg_attrs.default == inspect._empty
