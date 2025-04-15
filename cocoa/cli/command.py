@@ -368,7 +368,6 @@ class Command(Generic[T]):
                     error,
                     consumed,
                 ) = await self._consume_multiarg_positional_value(
-                    arg,
                     positional_arg,
                     positional_args,
                     keyword_args_map,
@@ -437,7 +436,6 @@ class Command(Generic[T]):
     
     async def _consume_multiarg_positional_value(
         self,
-        arg: str,
         positional_arg: PositionalArg,
         positional_args: list[Any],
         keyword_args_map: dict[str, KeywordArg],
@@ -445,6 +443,7 @@ class Command(Generic[T]):
         idx: int,
     ):
         consumed = set()
+        values: list[Any] = []
 
         error: Exception | None = None
 
@@ -452,10 +451,10 @@ class Command(Generic[T]):
             if keyword_args_map.get(arg):
                 break
             
-            positional_args, error = await self._consume_positional_value(
+            values, error = await self._consume_positional_value(
                 arg,
                 positional_arg,
-                positional_args,
+                list(values),
             )
 
             if error:
@@ -466,6 +465,8 @@ class Command(Generic[T]):
                 )
 
             consumed.add(idx + arg_idx)
+
+        positional_args.append(values)
 
         return (
             positional_args,
