@@ -39,7 +39,13 @@ class Env(Generic[T]):
     def data_type(self):
         return self._data_types
 
-    async def parse(self, _: str | None = None):
+    async def parse(self, arg: str | None = None):
+        
+        if arg:
+            self.data = arg
+
+            return self
+
         result = await self._load_envar()
         if isinstance(result, Exception):
             return result
