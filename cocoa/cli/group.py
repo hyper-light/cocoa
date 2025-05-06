@@ -190,7 +190,19 @@ class Group(Generic[T]):
 
         result: Any | None = None
         if len(positional_args) > 0 or len(keyword_args) > 0:
-            result = await self._command_call(*positional_args, **keyword_args)
+            try:
+                result = await self._command_call(*positional_args, **keyword_args)
+
+            except Exception as err:
+                await self._print_group_help_message(
+                    error=err,
+                    subcommands=subcommands,
+                )
+
+                return (
+                    None,
+                    [err]
+                )
 
         if subcommand:
             subcommand._global_styles = self._global_styles

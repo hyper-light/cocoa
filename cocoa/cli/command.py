@@ -134,12 +134,23 @@ class Command(Generic[T]):
                 errors,
             )
 
-        result = await self._command_call(*positional_args, **keyword_args)
+        try:
+            result = await self._command_call(*positional_args, **keyword_args)
 
-        return (
-            result,
-            errors,
-        )
+            return (
+                result,
+                errors,
+            )
+        
+        except Exception as err:
+            await self._print_group_help_message(
+                error=err,
+            )
+
+            return (
+                None,
+                [err],
+            )
     
     def command(
         self,
