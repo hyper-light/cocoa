@@ -160,7 +160,11 @@ class PositionalArg(Generic[T]):
                 elif subtype is bytes:
                     return bytes(value, encoding="utf-8")
 
-                return subtype(value)
+                elif callable(subtype):
+                    return subtype(value)
+                
+                else:
+                    return value
 
             except Exception as e:
                 parse_error = e
