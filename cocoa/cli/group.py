@@ -229,8 +229,9 @@ class Group(Generic[T]):
 
         def wrap(command):
             group = create_group(command, styling=styling, shortnames=shortnames)
-
-            self.subgroups[group.group_name] = group
+            
+            group_name = group.group_name.replace('_', '-')
+            self.subgroups[group_name] = group
 
             for command in commands:
                 if isinstance(command, Group):
@@ -266,7 +267,8 @@ class Group(Generic[T]):
                 shortnames=shortnames,
             )
 
-            self.subcommands[cmd.command_name] = cmd
+            command_name = cmd.command_name.replace('_', '-')
+            self.subcommands[command_name] = cmd
 
             return command_call
 
