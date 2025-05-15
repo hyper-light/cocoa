@@ -102,7 +102,7 @@ class Spinner:
         status = await self._check_if_should_rerender()
 
         if status in [SpinnerStatus.OK, SpinnerStatus.FAILED]:
-            self._last_frame = self._create_last_frame(status)
+            self._last_frame = await self._create_last_frame(status)
             return [self._last_frame], True
 
         frame = await self._create_next_spin_frame()
