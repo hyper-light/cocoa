@@ -33,6 +33,7 @@ class Spinner:
             subscriptions = []
 
         self._config = config
+        self._text: str = ""
         self.subscriptions = subscriptions
 
         # Spinner
