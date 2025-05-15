@@ -53,7 +53,7 @@ def create_command(
     )
 
     return Command(
-        command_call.__name__,
+        command_call.__name__.replace('_', '-'),
         command_call,
         help_message,
         positional_args=positional_args_map,
