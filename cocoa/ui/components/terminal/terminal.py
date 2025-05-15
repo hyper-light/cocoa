@@ -452,12 +452,6 @@ class Terminal:
         except Exception:
             pass
 
-        try:
-            self._run_engine.set_result(None)
-            await asyncio.sleep(0)
-        except Exception:
-            pass
-
         await self._stdout_lock.acquire()
 
         frame = await self.canvas.render()
@@ -465,6 +459,12 @@ class Terminal:
         frame = f"\033[3J\033[H{frame}\n\n\033[?25h".encode()
 
         await self._loop.run_in_executor(None, self._writer.write, frame)
+
+        try:
+            self._run_engine.set_result(None)
+            await asyncio.sleep(0)
+        except Exception:
+            pass
 
         if self._stdout_lock.locked():
             self._stdout_lock.release()
@@ -513,7 +513,8 @@ class Terminal:
         ):
             pass
 
-        self._stdout_lock.release()
+        if self._stdout_lock.locked():
+            self._stdout_lock.release()
 
     def _reset_signal_handlers(self):
         for sig, sig_handler in self._dfl_sigmap.items():
