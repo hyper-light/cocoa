@@ -462,10 +462,9 @@ class Terminal:
 
         frame = await self.canvas.render()
 
-        frame = f"\033[3J\033[H{frame}\n\n".encode()
+        frame = f"\033[3J\033[H{frame}\n\n\033[?25h".encode()
 
         await self._loop.run_in_executor(None, self._writer.write, frame)
-        await self._loop.run_in_executor(None, self._writer.write, b"\033[?25h")
 
         if self._stdout_lock.locked():
             self._stdout_lock.release()
@@ -500,10 +499,9 @@ class Terminal:
 
         frame = await self.canvas.render()
 
-        frame = f"\033[3J\033[H{frame}\n\n".encode()
+        frame = f"\033[3J\033[H{frame}\n\n\033[?25h".encode()
 
         await self._loop.run_in_executor(None, self._writer.write, frame)
-        await self._loop.run_in_executor(None, self._writer.write, b"\033[?25h")
 
         try:
             self._run_engine.cancel()
