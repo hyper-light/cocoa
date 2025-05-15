@@ -27,7 +27,7 @@ class Spinner:
         subscriptions: list[str] | None = None,
     ):
         self.fit_type = WidgetFitDimensions.X_AXIS
-        self._name = name
+        self.name = name
 
         if subscriptions is None:
             subscriptions = []
