@@ -454,11 +454,16 @@ class Terminal:
 
         await self._stdout_lock.acquire()
 
-        frame = await self.canvas.render()
+        try:
 
-        frame = f"\033[3J\033[H{frame}\n\n\033[?25h".encode()
+            frame = await self.canvas.render()
 
-        await self._loop.run_in_executor(None, self._writer.write, frame)
+            frame = f"\033[3J\033[H{frame}\n\n\033[?25h".encode()
+
+            await self._loop.run_in_executor(None, self._writer.write, frame)
+
+        except Exception:
+            pass
 
         try:
             self._run_engine.set_result(None)
@@ -497,11 +502,16 @@ class Terminal:
 
         await self._stdout_lock.acquire()
 
-        frame = await self.canvas.render()
+        try:
 
-        frame = f"\033[3J\033[H{frame}\n\n\033[?25h".encode()
+            frame = await self.canvas.render()
 
-        await self._loop.run_in_executor(None, self._writer.write, frame)
+            frame = f"\033[3J\033[H{frame}\n\n\033[?25h".encode()
+
+            await self._loop.run_in_executor(None, self._writer.write, frame)
+
+        except Exception:
+            pass
 
         try:
             self._run_engine.cancel()
