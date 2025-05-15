@@ -342,7 +342,7 @@ class Terminal:
         except Exception:
             # Ensure cursor is not hidden if any failure occurs that prevents
             # getting it back
-            await self._show_cursor()
+            await self._loop.run_in_executor(None, self._writer.write, b"\033[?25h")
 
     async def _execute_render_loop(self):
         await self._clear_terminal(force=True)
@@ -355,7 +355,6 @@ class Terminal:
 
                 frame = f"\033[3J\033[H{frame}\n".encode()
                 await self._loop.run_in_executor(None, self._writer.write, frame)
-                await self._loop.run_in_executor(None, self._writer.drain)
 
                 if self._stdout_lock.locked():
                     self._stdout_lock.release()
@@ -365,19 +364,6 @@ class Terminal:
 
                 # Wait
             await asyncio.sleep(self._interval)
-
-    async def _show_cursor(self):
-        loop = asyncio.get_event_loop()
-        if await self._loop.run_in_executor(None, self._stdout.isatty):
-            # ANSI Control Sequence DECTCEM 1 does not work in Jupyter
-
-            await self._stdout_lock.acquire()
-
-            await loop.run_in_executor(None, self._writer.write, b"\033[?25h")
-            await self._loop.run_in_executor(None, self._writer.drain)
-
-            if self._stdout_lock.locked():
-                self._stdout_lock.release()
 
     async def _hide_cursor(self):
         loop = asyncio.get_event_loop()
@@ -401,16 +387,12 @@ class Terminal:
                 b"\033[2J\033H",
             )
 
-            await self._loop.run_in_executor(None, self._writer.drain)
-
         else:
             await self._loop.run_in_executor(
                 None,
                 self._writer.write,
                 b"\033[3J\033[H",
             )
-
-            await self._loop.run_in_executor(None, self._writer.drain)
 
     async def pause(self):
         await self.canvas.pause()
@@ -449,7 +431,7 @@ class Terminal:
         except Exception:
             # Ensure cursor is not hidden if any failure occurs that prevents
             # getting it back
-            await self._show_cursor()
+            await self._loop.run_in_executor(None, self._writer.write, b"\033[?25h")
 
     async def stop(self):
         self._stop_time = time.time()
@@ -483,12 +465,11 @@ class Terminal:
         frame = f"\033[3J\033[H{frame}\n".encode()
 
         await self._loop.run_in_executor(None, self._writer.write, frame)
-        await self._loop.run_in_executor(None, self._writer.drain)
+        await self._loop.run_in_executor(None, self._writer.write, b"\033[?25h")
 
         if self._stdout_lock.locked():
             self._stdout_lock.release()
 
-        await self._show_cursor()
 
     async def abort(self):
         self._stop_time = time.time()
@@ -522,7 +503,7 @@ class Terminal:
         frame = f"\033[3J\033[H{frame}\n".encode()
 
         await self._loop.run_in_executor(None, self._writer.write, frame)
-        await self._loop.run_in_executor(None, self._writer.drain)
+        await self._loop.run_in_executor(None, self._writer.write, b"\033[?25h")
 
         try:
             self._run_engine.cancel()
@@ -535,8 +516,6 @@ class Terminal:
             pass
 
         self._stdout_lock.release()
-
-        await self._show_cursor()
 
     def _reset_signal_handlers(self):
         for sig, sig_handler in self._dfl_sigmap.items():
