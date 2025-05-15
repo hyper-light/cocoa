@@ -62,9 +62,6 @@ class MultilineText:
         if text_length > max_width:
             text = [line[:max_width] for line in text]
 
-        if len(text) > max_height:
-            text = text[:max_height]
-
         self.offset = 0
         self._text_width = text_length
         self._max_width = max_width
@@ -112,11 +109,10 @@ class MultilineText:
     async def _rerender(self, text: list[str]):
         status_text = list(text)
 
+        status_text = self._cycle_text_rows(status_text)
         remainders: list[int] = [
             max(self._max_width - len(line), 0) for line in status_text
         ]
-
-        status_text = self._cycle_text_rows(status_text)
 
         for idx, line in enumerate(status_text):
             status_text[idx] = await stylize(
