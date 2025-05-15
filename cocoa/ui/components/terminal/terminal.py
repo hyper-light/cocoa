@@ -356,6 +356,7 @@ class Terminal:
 
                 frame = f"\033[3J\033[H{frame}\n".encode()
                 self._writer.write(frame)
+                await self._writer.drain()
 
                 if self._stdout_lock.locked():
                     self._stdout_lock.release()
@@ -371,6 +372,7 @@ class Terminal:
             await self._stdout_lock.acquire()
             # ANSI Control Sequence DECTCEM 1 does not work in Jupyter
             self._writer.write(b"\033[?25l")
+            await self._writer.drain()
 
             if self._stdout_lock.locked():
                 self._stdout_lock.release()
@@ -381,9 +383,11 @@ class Terminal:
     ):
         if force:
             self._writer.write(b"\033[2J\033H")
+            await self._writer.drain()
 
         else:
             self._writer.write(b"\033[3J\033[H")
+            await self._writer.drain()
 
     async def pause(self):
         await self.canvas.pause()
@@ -452,6 +456,7 @@ class Terminal:
 
             frame = f"\033[3J\033[H{frame}\n\n\033[?25h".encode()
             self._writer.write(frame)
+            await self._writer.drain()
 
         except Exception:
             pass
@@ -499,6 +504,7 @@ class Terminal:
 
             frame = f"\033[3J\033[H{frame}\n\n\033[?25h".encode()
             self._writer.write(frame)
+            await self._writer.drain()
 
         except Exception:
             pass
