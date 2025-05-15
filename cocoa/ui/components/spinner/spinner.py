@@ -12,7 +12,11 @@ from cocoa.ui.config.widget_fit_dimensions import WidgetFitDimensions
 from cocoa.ui.styling import stylize, get_style
 from .spinner_config import SpinnerConfig
 from .spinner_factory import SpinnerFactory
-from .spinner_status import SpinnerStatus
+from .spinner_status import (
+    SpinnerStatus, 
+    SpinnerStatusName, 
+    SpinnerStatusMap,
+)
 
 
 class Spinner:
@@ -44,11 +48,13 @@ class Spinner:
         self._last_frame: Optional[str] = None
         self._base_size: int = 0
         self._max_width: int = 0
+        self._last_frame: str | None = None
 
         self._update_lock: asyncio.Lock | None = None
-        self._spinner_status = SpinnerStatus.READY
+        self._updates: asyncio.Queue[SpinnerStatus] | None = None
 
         self._mode = TerminalMode.to_mode(config.terminal_mode)
+        self._status_map = SpinnerStatusMap()
 
     @property
     def raw_size(self):
@@ -58,8 +64,13 @@ class Spinner:
     def size(self):
         return self._base_size
 
-    async def update(self, _: Any):
-        pass
+    async def update(self, status: SpinnerStatusName):
+        await self._update_lock.acquire()
+        self._updates.put_nowait(
+            self._status_map.map_to_status(status)
+        )
+        
+        self._update_lock.release()
 
     async def fit(
         self,
@@ -67,6 +78,9 @@ class Spinner:
     ):
         if self._update_lock is None:
             self._update_lock = asyncio.Lock()
+
+        if self._updates is None:
+            self._updates = asyncio.Queue()
 
         remaining_size = max_width
 
@@ -82,12 +96,11 @@ class Spinner:
         self._max_width = max_width
 
     async def get_next_frame(self):
-        if self._spinner_status == SpinnerStatus.READY:
-            self._spinner_size = SpinnerStatus.ACTIVE
+        status = await self._check_if_should_rerender()
 
-        if self._spinner_status in [SpinnerStatus.OK, SpinnerStatus.FAILED]:
-            frame = self._create_last_frame()
-            return [frame], True
+        if status in [SpinnerStatus.OK, SpinnerStatus.FAILED]:
+            self._last_frame = self._create_last_frame(status)
+            return [self._last_frame], True
 
         frame = await self._create_next_spin_frame()
         return [frame], True
@@ -112,18 +125,32 @@ class Spinner:
 
     async def ok(self):
         await self._update_lock.acquire()
-        self._spinner_status = SpinnerStatus.OK
+        self._updates.put_nowait(SpinnerStatus.OK)
         self._update_lock.release()
 
     async def fail(self):
         await self._update_lock.acquire()
-        self._spinner_size = SpinnerStatus.FAILED
+        self._updates.put_nowait(SpinnerStatus.FAILED)
         self._update_lock.release()
 
-    async def _create_last_frame(self):
+    async def _check_if_should_rerender(self):
+        await self._update_lock.acquire()
+
+        status: SpinnerStatus | None = None
+        if self._updates.empty() is False:
+            status = await self._updates.get()
+
+        self._update_lock.release()
+
+        return status
+
+    async def _create_last_frame(
+        self,
+        status: SpinnerStatus
+    ):
         """Stop spinner, compose last frame and 'freeze' it."""
 
-        if self._spinner_size == SpinnerStatus.FAILED:
+        if status == SpinnerStatus.FAILED:
             return await stylize(
                 self._config.fail_char,
                 color=get_style(self._config.fail_color),
