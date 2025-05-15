@@ -49,8 +49,12 @@ async def handle_resize(engine: Terminal):
         terminal_size = await loop.run_in_executor(None, shutil.get_terminal_size)
 
         width = int(math.floor(terminal_size.columns * 0.75))
+        if engine.config.max_width:
+            width = min(width, engine.config.max_width)
 
         height = terminal_size.lines - 5
+        if engine.config.max_height:
+            height = min(height, engine.config.max_height)
 
         width_threshold = 0
         height_threshold = 0
@@ -310,10 +314,17 @@ class Terminal:
                 int(math.floor(terminal_size.columns * 0.75)) - self._horizontal_padding
             )
 
+        if self.config.max_width:
+            width = min(width, self.config.max_width)
+
         width = max(width - (width % 3), 1)
 
+        terminal_height = terminal_size.lines
+        if self.config.max_height:
+            terminal_height = min(terminal_height, self.config.max_height)
+
         if height is None:
-            height = terminal_size.lines - 5 - self._vertical_padding
+            height = terminal_height - 5 - self._vertical_padding
 
         self._stop_run = asyncio.Event()
         self._hide_run = asyncio.Event()
@@ -451,12 +462,12 @@ class Terminal:
         await self._stdout_lock.acquire()
 
         try:
-
             frame = await self.canvas.render()
 
-            frame = f"\033[3J\033[H{frame}\n\n\033[?25h".encode()
+            frame = f"\033[H\033[2J{frame}\n\033[?25h".encode()
             self._writer.write(frame)
             await self._writer.drain()
+            self._writer.close()
 
         except Exception:
             pass
@@ -499,12 +510,12 @@ class Terminal:
         await self._stdout_lock.acquire()
 
         try:
-
             frame = await self.canvas.render()
 
-            frame = f"\033[3J\033[H{frame}\n\n\033[?25h".encode()
+            frame = f"\033[H\033[2J{frame}\n\033[?25h".encode()
             self._writer.write(frame)
             await self._writer.drain()
+            self._writer.close()
 
         except Exception:
             pass
