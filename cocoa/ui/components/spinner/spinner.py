@@ -95,6 +95,8 @@ class Spinner:
         self._base_size = self._spinner_size + len(self._text)
         self._max_width = max_width
 
+        self._updates.put_nowait(SpinnerStatus.READY)
+
     async def get_next_frame(self):
         status = await self._check_if_should_rerender()
 
