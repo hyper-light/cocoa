@@ -305,8 +305,10 @@ class Terminal:
 
         terminal_size = await self._loop.run_in_executor(None, shutil.get_terminal_size)
 
-        if self.config:
+        if self.config and self.config.width:
             width = self.config.width - self._horizontal_padding
+
+        if self.config and self.config.height:
             height = self.config.height - self._vertical_padding
 
         if width is None:
@@ -314,13 +316,13 @@ class Terminal:
                 int(math.floor(terminal_size.columns * 0.75)) - self._horizontal_padding
             )
 
-        if self.config.max_width:
+        if self.config and self.config.max_width:
             width = min(width, self.config.max_width)
 
         width = max(width - (width % 3), 1)
 
         terminal_height = terminal_size.lines
-        if self.config.max_height:
+        if self.config and self.config.max_height:
             terminal_height = min(terminal_height, self.config.max_height)
 
         if height is None:
