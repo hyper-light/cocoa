@@ -342,7 +342,8 @@ class Terminal:
         except Exception:
             # Ensure cursor is not hidden if any failure occurs that prevents
             # getting it back
-            await self._loop.run_in_executor(None, self._writer.write, b"\033[?25h")
+            self._writer.write( b"\033[?25h")
+            await self._writer.drain()
 
     async def _execute_render_loop(self):
         await self._clear_terminal(force=True)
@@ -354,7 +355,7 @@ class Terminal:
                 frame = await self.canvas.render()
 
                 frame = f"\033[3J\033[H{frame}\n".encode()
-                await self._loop.run_in_executor(None, self._writer.write, frame)
+                self._writer.write(frame)
 
                 if self._stdout_lock.locked():
                     self._stdout_lock.release()
@@ -366,12 +367,10 @@ class Terminal:
             await asyncio.sleep(self._interval)
 
     async def _hide_cursor(self):
-        loop = asyncio.get_event_loop()
         if await self._loop.run_in_executor(None, self._stdout.isatty):
             await self._stdout_lock.acquire()
             # ANSI Control Sequence DECTCEM 1 does not work in Jupyter
-            await loop.run_in_executor(None, self._writer.write, b"\033[?25l")
-            await self._loop.run_in_executor(None, self._writer.drain)
+            self._writer.write(b"\033[?25l")
 
             if self._stdout_lock.locked():
                 self._stdout_lock.release()
@@ -381,18 +380,10 @@ class Terminal:
         force: bool = False,
     ):
         if force:
-            await self._loop.run_in_executor(
-                None,
-                self._writer.write,
-                b"\033[2J\033H",
-            )
+            self._writer.write(b"\033[2J\033H")
 
         else:
-            await self._loop.run_in_executor(
-                None,
-                self._writer.write,
-                b"\033[3J\033[H",
-            )
+            self._writer.write(b"\033[3J\033[H")
 
     async def pause(self):
         await self.canvas.pause()
@@ -431,7 +422,8 @@ class Terminal:
         except Exception:
             # Ensure cursor is not hidden if any failure occurs that prevents
             # getting it back
-            await self._loop.run_in_executor(None, self._writer.write, b"\033[?25h")
+            self._writer.write(b"\033[?25h")
+            await self._writer.drain()
 
     async def stop(self):
         self._stop_time = time.time()
