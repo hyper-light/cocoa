@@ -92,7 +92,7 @@ class MultilineText:
 
             rerender = True
 
-        elif self._config.text:
+        elif self._config.text and self._last_rendered_frames is None:
             self._last_state = self._config.text
             frames = await self._rerender(self._config.text)
             self._last_rendered_frames = frames
