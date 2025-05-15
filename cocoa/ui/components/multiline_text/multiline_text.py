@@ -26,6 +26,7 @@ class MultilineText:
 
         self._max_width: int | None = None
         self._text_width = 0
+        self.offset = 0
 
         self._start: float | None = None
         self._elapsed: float = 0
@@ -64,6 +65,7 @@ class MultilineText:
         if len(text) > max_height:
             text = text[:max_height]
 
+        self.offset = 0
         self._text_width = text_length
         self._max_width = max_width
         self._max_height = max_height
