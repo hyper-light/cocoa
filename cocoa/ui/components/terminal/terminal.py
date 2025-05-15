@@ -462,7 +462,7 @@ class Terminal:
 
         frame = await self.canvas.render()
 
-        frame = f"\033[3J\033[H{frame}\n".encode()
+        frame = f"\033[3J\033[H{frame}\n\n".encode()
 
         await self._loop.run_in_executor(None, self._writer.write, frame)
         await self._loop.run_in_executor(None, self._writer.write, b"\033[?25h")
@@ -500,7 +500,7 @@ class Terminal:
 
         frame = await self.canvas.render()
 
-        frame = f"\033[3J\033[H{frame}\n".encode()
+        frame = f"\033[3J\033[H{frame}\n\n".encode()
 
         await self._loop.run_in_executor(None, self._writer.write, frame)
         await self._loop.run_in_executor(None, self._writer.write, b"\033[?25h")
