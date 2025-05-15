@@ -17,7 +17,7 @@ from typing import (
     List,
     TypeVar,
 )
-
+from concurrent.futures import ThreadPoolExecutor
 from cocoa.ui.state import Action, ActionData, SubscriptionSet, observe
 try:
     import uvloop as uvloop
@@ -355,6 +355,7 @@ class Terminal:
 
                 frame = f"\033[3J\033[H{frame}\n".encode()
                 await self._loop.run_in_executor(None, self._writer.write, frame)
+                await self._loop.run_in_executor(None, self._writer.drain)
 
                 if self._stdout_lock.locked():
                     self._stdout_lock.release()
@@ -373,6 +374,7 @@ class Terminal:
             await self._stdout_lock.acquire()
 
             await loop.run_in_executor(None, self._writer.write, b"\033[?25h")
+            await self._loop.run_in_executor(None, self._writer.drain)
 
             if self._stdout_lock.locked():
                 self._stdout_lock.release()
@@ -383,6 +385,7 @@ class Terminal:
             await self._stdout_lock.acquire()
             # ANSI Control Sequence DECTCEM 1 does not work in Jupyter
             await loop.run_in_executor(None, self._writer.write, b"\033[?25l")
+            await self._loop.run_in_executor(None, self._writer.drain)
 
             if self._stdout_lock.locked():
                 self._stdout_lock.release()
@@ -398,12 +401,16 @@ class Terminal:
                 b"\033[2J\033H",
             )
 
+            await self._loop.run_in_executor(None, self._writer.drain)
+
         else:
             await self._loop.run_in_executor(
                 None,
                 self._writer.write,
                 b"\033[3J\033[H",
             )
+
+            await self._loop.run_in_executor(None, self._writer.drain)
 
     async def pause(self):
         await self.canvas.pause()
@@ -476,6 +483,7 @@ class Terminal:
         frame = f"\033[3J\033[H{frame}\n".encode()
 
         await self._loop.run_in_executor(None, self._writer.write, frame)
+        await self._loop.run_in_executor(None, self._writer.drain)
 
         if self._stdout_lock.locked():
             self._stdout_lock.release()
@@ -514,6 +522,7 @@ class Terminal:
         frame = f"\033[3J\033[H{frame}\n".encode()
 
         await self._loop.run_in_executor(None, self._writer.write, frame)
+        await self._loop.run_in_executor(None, self._writer.drain)
 
         try:
             self._run_engine.cancel()
