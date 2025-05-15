@@ -46,7 +46,6 @@ class Spinner:
         )
         self._cycle = itertools.cycle(self._frames)
 
-        self._last_frame: Optional[str] = None
         self._base_size: int = 0
         self._max_width: int = 0
         self._last_frame: str | None = None
@@ -101,9 +100,12 @@ class Spinner:
     async def get_next_frame(self):
         status = await self._check_if_should_rerender()
 
-        if status in [SpinnerStatus.OK, SpinnerStatus.FAILED]:
+        if status in [SpinnerStatus.OK, SpinnerStatus.FAILED] and self._last_frame is None:
             self._last_frame = await self._create_last_frame(status)
             return [self._last_frame], True
+        
+        elif self._last_frame:
+            return [self._last_frame], False
 
         frame = await self._create_next_spin_frame(status)
         return [frame], True
