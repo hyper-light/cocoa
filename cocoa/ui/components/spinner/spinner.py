@@ -105,7 +105,7 @@ class Spinner:
             self._last_frame = await self._create_last_frame(status)
             return [self._last_frame], True
 
-        frame = await self._create_next_spin_frame()
+        frame = await self._create_next_spin_frame(status)
         return [frame], True
 
     async def pause(self):
@@ -174,16 +174,28 @@ class Spinner:
             mode=self._mode,
         )
 
-    async def _create_next_spin_frame(self):
+    async def _create_next_spin_frame(self, status: SpinnerStatus):
         # Compose output
         spin_phase = next(self._cycle)
 
+        if status == SpinnerStatus.READY:
+            return await stylize(
+                spin_phase,
+                color=get_style(self._config.ready_color),
+                highlight=get_style(self._config.ready_highlight),
+                attrs=[get_style(attr) for attr in self._config.ready_attributes]
+                if self._config.ready_attributes
+                else None,
+                mode=self._mode,
+            )
+
+
         return await stylize(
             spin_phase,
-            color=get_style(self._config.color),
-            highlight=get_style(self._config.highlight),
-            attrs=[get_style(attr) for attr in self._config.attributes]
-            if self._config.attributes
+            color=get_style(self._config.active_color),
+            highlight=get_style(self._config.active_highlight),
+            attrs=[get_style(attr) for attr in self._config.active_attributes]
+            if self._config.active_attributes
             else None,
             mode=self._mode,
         )

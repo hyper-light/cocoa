@@ -7,13 +7,16 @@ from .spinner_types import SpinnerName
 
 
 class SpinnerConfig(BaseModel):
-    attributes: List[Attributizer] | None = None
-    color: Colorizer | None = None
+    ready_attributes: List[Attributizer] | None = None
+    ready_color: Colorizer | None = None
+    ready_highlight: HighlightColorizer | None = None
+    active_color: Colorizer | None = None
+    active_highlight: HighlightColorizer | None = None
+    active_attributes: List[Attributizer] | None = None
     fail_attrbutes: List[Attributizer] | None = None
     fail_char: StrictStr = "✘"
     fail_color: Colorizer | None = None
     fail_highlight: HighlightColorizer | None = None
-    highlight: HighlightColorizer | None = None
     ok_attributes: List[Attributizer] | None = None
     ok_char: StrictStr = "✔"
     ok_color: Colorizer | None = None
