@@ -466,7 +466,7 @@ class Terminal:
         try:
             frame = await self.canvas.render()
 
-            frame = f"\033[H\033[2J{frame}\n\033[?25h".encode()
+            frame = f"\033[H\033[3J{frame}\n\033[?25h".encode()
             self._writer.write(frame)
             await self._writer.drain()
             self._writer.close()
@@ -514,7 +514,7 @@ class Terminal:
         try:
             frame = await self.canvas.render()
 
-            frame = f"\033[H\033[2J{frame}\n\033[?25h".encode()
+            frame = f"\033[H\033[3J{frame}\n\033[?25h".encode()
             self._writer.write(frame)
             await self._writer.drain()
             self._writer.close()
