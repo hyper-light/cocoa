@@ -28,8 +28,22 @@ class CLI:
 
         context = Context()
 
+        errors: list[str] = []
+        exit_code: int | None = None
         if len(args) > 0:
-            return await cls._entrypoint.run(args, context)
+            (
+                _,
+                errors,
+                exit_code,
+            ) = await cls._entrypoint.run(args, context)
+
+        if len(errors) > 0 and exit_code is not None:
+            loop = asyncio.get_event_loop()
+            await loop.run_in_executor(
+                None,
+                sys.exit,
+                exit_code,
+            )
         
         subcommands: list[str] | None = None
         if len(cls._entrypoint.subgroups) > 0 or len(cls._entrypoint.subcommands) > 0:
@@ -51,6 +65,7 @@ class CLI:
             shortnames = {}
 
         def wrap(command_call):
+
             if global_styles:
                 cls._global_styles = global_styles
 
@@ -97,6 +112,8 @@ class CLI:
         *commands: list[Group | Command],
         styling: CLIStyle | None = None,
         shortnames: dict[str, str] | None = None,
+        display_help_on_error: bool = True,
+        error_exit_code: int = 1,
     ):
         if shortnames is None:
             shortnames = {}
@@ -106,6 +123,8 @@ class CLI:
                 return cls._entrypoint.group(
                     styling=styling,
                     shortnames=shortnames,
+                    display_help_on_error=display_help_on_error,
+                    error_exit_code=error_exit_code,
                 )(command)
 
             else:
@@ -113,6 +132,7 @@ class CLI:
                     command,
                     styling=styling,
                     shortnames=shortnames,
+
                 )
 
                 for command in commands:
@@ -139,18 +159,25 @@ class CLI:
         cls,
         styling: CLIStyle | None = None,
         shortnames: dict[str, str] | None = None,
+        display_help_on_error: bool = True,
+        error_exit_code: int = 1,
     ):
         if shortnames is None:
             shortnames = {}
 
         def wrap(command):
             if cls._entrypoint.source:
-                cls._entrypoint.command(styling=styling, shortnames=shortnames)(command)
+                cls._entrypoint.command(
+                    styling=styling,
+                    shortnames=shortnames,
+                )(command)
 
             return create_command(
                 command,
                 styling=styling,
                 shortnames=shortnames,
+                display_help_on_error=display_help_on_error,
+                error_exit_code=error_exit_code,
             )
 
         return wrap

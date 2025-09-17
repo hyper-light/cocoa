@@ -37,6 +37,8 @@ def create_command(
     command_call: Callable[..., Any],
     styling: CLIStyle | None = None,
     shortnames: dict[str, str] | None = None,
+    display_help_on_error: bool = True,
+    error_exit_code: int = 1,
 ):
     indentation = 0
     if styling:
@@ -58,12 +60,16 @@ def create_command(
         help_message,
         positional_args=positional_args_map,
         keyword_args_map=keyword_args_map,
+        display_help_on_error=display_help_on_error,
+        error_exit_code=error_exit_code,
     )
 
 
 def command(
     styling: CLIStyle | None = None,
     shortnames: dict[str, str] | None = None,
+    display_help_on_error: bool = True,
+    error_exit_code: int = 1,
 ):
     if shortnames is None:
         shortnames = {}
@@ -74,12 +80,15 @@ def command(
             command_call,
             styling=styling,
             shortnames=shortnames,
+            display_help_on_error=display_help_on_error,
+            error_exit_code=error_exit_code,
         )
 
     return wrap
 
 
 class Command(Generic[T]):
+
     def __init__(
         self,
         command: str,
@@ -87,6 +96,8 @@ class Command(Generic[T]):
         help_message: HelpMessage,
         positional_args: dict[str, PositionalArg] | None = None,
         keyword_args_map: dict[str, KeywordArg] | None = None,
+        display_help_on_error: bool = True,
+        error_exit_code: int = 1,
     ):
         if positional_args is None:
             positional_args = {}
@@ -104,6 +115,9 @@ class Command(Generic[T]):
         self.keyword_args_map = keyword_args_map
         self.keyword_args_count = len(keyword_args_map)
         self.positional_args_count = len(positional_args)
+        self.display_help_on_error = display_help_on_error
+        self.error_exit_code = error_exit_code
+
         self._consumed_keywords: list[str] = []
         self._loop = asyncio.get_event_loop()
 
@@ -116,22 +130,30 @@ class Command(Generic[T]):
         self,
         args: list[str],
         context: Context[str, Any],
-    ) -> tuple[Any | None, list[str]]:
+    ) -> tuple[
+        Any | None,
+        list[str], int | None,
+    ]:
         (positional_args, keyword_args, errors) = await self._find_args(args, context)
 
         if positional_args is None and keyword_args is None:
             await self._print_group_help_message()
 
-            return (None, errors)
+            return (
+                None,
+                errors,
+                self.error_exit_code,
+            )
 
         elif len(errors) > 0:
             await self._print_group_help_message(
-                error=errors[0],
+                error=[0],
             )
 
             return (
                 None,
                 errors,
+                self.error_exit_code,
             )
 
         try:
@@ -140,9 +162,14 @@ class Command(Generic[T]):
             return (
                 result,
                 errors,
+                self.error_exit_code,
             )
         
         except Exception as err:
+
+            if self.display_help_on_error is False:
+                raise err
+
             await self._print_group_help_message(
                 error=err,
             )
@@ -150,12 +177,15 @@ class Command(Generic[T]):
             return (
                 None,
                 [err],
+                self.error_exit_code,
             )
     
     def command(
         self,
         styling: CLIStyle | None = None,
         shortnames: dict[str, str] | None = None,
+        display_help_on_error: bool = True,
+        error_exit_code: int = 1,
     ):
         if shortnames is None:
             shortnames = {}
@@ -165,6 +195,8 @@ class Command(Generic[T]):
                 command_call,
                 styling=styling,
                 shortnames=shortnames,
+                display_help_on_error=display_help_on_error,
+                error_exit_code=error_exit_code,
             )
 
             return command_call
