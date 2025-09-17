@@ -37,14 +37,8 @@ class CLI:
                 exit_code,
             ) = await cls._entrypoint.run(args, context)
 
-        if len(errors) > 0 and exit_code is not None:
-            loop = asyncio.get_event_loop()
-            await loop.run_in_executor(
-                None,
-                sys.exit,
-                exit_code,
-            )
-        
+            await cls._exit(errors, exit_code)
+            
         subcommands: list[str] | None = None
         if len(cls._entrypoint.subgroups) > 0 or len(cls._entrypoint.subcommands) > 0:
             subcommands = list(cls._entrypoint.subgroups.keys())
@@ -231,3 +225,23 @@ class CLI:
 
         writer.write(help_message_lines.encode())
         await writer.drain()
+
+    @classmethod
+    async def _exit(
+        cls,
+        errors: list[str],
+        exit_code: int | None,
+    ):
+        loop = asyncio.get_event_loop()
+        if len(errors) > 0 and exit_code is not None:
+            await loop.run_in_executor(
+                None,
+                sys.exit,
+                exit_code,
+            )
+
+        await loop.run_in_executor(
+            None,
+            sys.exit,
+            0,
+        )
