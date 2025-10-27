@@ -232,7 +232,7 @@ class Group(Generic[T]):
 
 
                 await self._print_group_help_message(
-                    error=err,
+                    error=str(err),
                     subcommands=subcommands,
                 )
 
