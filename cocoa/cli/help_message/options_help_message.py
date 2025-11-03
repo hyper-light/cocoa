@@ -65,7 +65,9 @@ class OptionsHelpMessage(BaseModel):
             [
                 await self._to_help_string(
                     arg,
-                    descriptor=param_descriptors.get(arg.name),
+                    descriptor=param_descriptors.get(
+                        "-".join(arg.name.split("_")),
+                    ),
                     styles=styles,
                 )
                 for arg in self.options

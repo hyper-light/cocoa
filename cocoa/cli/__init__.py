@@ -12,6 +12,7 @@ from .arg_types import Operator as Operator
 from .arg_types import Paths as Paths
 from .arg_types import Pattern as Pattern
 from .arg_types import RawFile as RawFile
+from .arg_types import YamlFile as YamlFile
 from .cli import CLI as CLI
 from .command import command as command
 from .group import group as group

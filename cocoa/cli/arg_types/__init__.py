@@ -16,6 +16,7 @@ from .data_types import JsonFile as JsonFile
 from .data_types import Paths as Paths
 from .data_types import Pattern as Pattern
 from .data_types import RawFile as RawFile
+from .data_types import YamlFile as YamlFile
 from .operators import Chain as Chain
 from .operators import Map as Map
 from .operators import Operator as Operator
