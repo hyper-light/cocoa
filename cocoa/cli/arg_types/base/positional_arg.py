@@ -96,12 +96,13 @@ class PositionalArg(Generic[T]):
 
         args = get_args(data_type)
 
+        complex_types = list(self.complex_types.keys())
         self._is_complex_type = (
             get_origin(
                 data_type,
             )
-            in self.complex_types.keys()
-        )
+            in complex_types
+        ) or data_type in complex_types
 
         if len(args) > 0 and self._is_complex_type is False:
             self._value_type = args
