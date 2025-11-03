@@ -43,8 +43,8 @@ except (Exception, ImportError):
 
 T = TypeVar("T", bound=BaseModel)
 
-class Yaml(Generic[T]):
-    def __init__(self, data_type: 'Yaml[T]'):
+class YamlFile(Generic[T]):
+    def __init__(self, data_type: 'YamlFile[T]'):
         super().__init__()
 
         self.data: CommentedBase | None = None
