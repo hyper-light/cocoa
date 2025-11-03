@@ -131,6 +131,9 @@ class YamlFile(Generic[T]):
         yaml_data: dict[str, Any],
         arg: str,
     ):
+        if yaml_data is None:
+            yaml_data = {}
+            
         for conversion_type in self._types:
             try:
                 if conversion_type in [list] and isinstance(yaml_data, list):
@@ -138,7 +141,7 @@ class YamlFile(Generic[T]):
 
                 elif conversion_type in [bytes]:
                     return bytes(yaml_data, encoding="utf-8")
-
+                
                 return conversion_type(**yaml_data)
 
             except Exception:
