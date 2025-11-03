@@ -9,7 +9,7 @@
 
 | Package     | Cocoa                                                      |
 | ----------- | -----------                                                     |
-| Version     | 0.4.4                                                          |
+| Version     | 0.4.5                                                          |
 | Download    | https://pypi.org/project/hyperlight-cocoa/                            | 
 | Source      | https://github.com/hyper-light/cocoa                       |
 | Keywords    | termial, ui, async, cli, graphics, ASCII  |
