@@ -41,13 +41,13 @@ except (Exception, ImportError):
             return ImportError('You must install the [yaml] option to use the YamlFileWithDefault operator!')
 
 
-T = TypeVar("T", bound=BaseModel)
+T = TypeVar("T", bound=CommentedBase)
 
 class YamlFile(Generic[T]):
     def __init__(self, data_type: 'YamlFile[T]'):
         super().__init__()
 
-        self.data: CommentedBase | None = None
+        self.data: T | None = None
 
         conversion_types: list[T] = reduce_pattern_type(data_type)
 
