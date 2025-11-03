@@ -125,6 +125,9 @@ class PositionalArg(Generic[T]):
         elif len(args) > 0:
             base_type = args
 
+        if base_type is None:
+            base_type = [data_type]
+
         self._data_type = [
             subtype_type.__name__ if hasattr(subtype_type, "__name__") else subtype_type
             for subtype_type in base_type

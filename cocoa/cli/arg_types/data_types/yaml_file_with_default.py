@@ -74,16 +74,6 @@ class YamlFileWithDefault:
             if arg is None:
                 return Exception("no argument passed for filepath")
 
-            return await self._load_file(arg)
-
-        except Exception as e:
-            return Exception(
-                f"encountered error {str(e)} parsing file at {arg} to JSON"
-            )
-
-    async def _load_file(self, arg: str):
-        try:
-
             return await self._loop.run_in_executor(
                 None,
                 self._load_yaml_or_default,
@@ -91,7 +81,9 @@ class YamlFileWithDefault:
             )
 
         except Exception as e:
-            return Exception(f"encountered error {str(e)} opening file at {arg}")
+            return Exception(
+                f"encountered error {str(e)} parsing file at {arg} to YAML"
+            )
 
     def _load_yaml_or_default(self, arg: str):
 
@@ -111,14 +103,19 @@ class YamlFileWithDefault:
             yaml.preserve_quotes = True
             yaml.width = 4096
             yaml.indent(mapping=2, sequence=4, offset=2)
+            data = CommentedMap()
             with open(arg, 'w') as file:
-                yaml.dump(file, CommentedMap())
+                yaml.dump(data, file)
 
-
-            return file
+            return data
         
         with open(arg) as file:
-            return yaml.load(file)
+            data = yaml.load(file)
+
+            if data is None:
+                return CommentedMap()
+            
+            return data
 
                 
 

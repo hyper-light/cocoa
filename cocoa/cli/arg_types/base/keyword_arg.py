@@ -148,6 +148,9 @@ class KeywordArg(Generic[T]):
         elif len(args) > 0:
             base_type = args
 
+        if base_type is None:
+            base_type = [data_type]
+
         self.default = default
         self.group = group
         self.arg_type: KeywordArgType = arg_type
@@ -194,9 +197,7 @@ class KeywordArg(Generic[T]):
             ):
                 complex_type = complex_type_factory(self.name, subtype)
 
-                complex_type.data = default_value
-
-                return complex_type
+                return await complex_type.parse(default_value)
 
         return default_value
 
@@ -240,7 +241,6 @@ class KeywordArg(Generic[T]):
                     complex_type_factory := self.complex_types.get(subtype)
                 ):
                     complex_type = complex_type_factory(self.name, subtype)
-
                     return await complex_type.parse(value)
 
                 elif subtype is bytes:
