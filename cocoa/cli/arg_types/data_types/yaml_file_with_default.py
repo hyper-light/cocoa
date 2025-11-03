@@ -39,7 +39,7 @@ except (Exception, ImportError):
         def load(self, file_pointer: Any):
             return ImportError('You must install the [yaml] option to use the YamlFileWithDefault operator!')
         
-        def dump(self, file_pointer: Any):
+        def dump(self, file_pointer: Any, data: Any):
             return ImportError('You must install the [yaml] option to use the YamlFileWithDefault operator!')
 
 
@@ -113,7 +113,7 @@ class YamlFileWithDefault:
             yaml.width = 4096
             yaml.indent(mapping=2, sequence=4, offset=2)
             with open(arg, 'w') as file:
-                yaml.dump(file)
+                yaml.dump(file, CommentedMap())
 
 
             return file
