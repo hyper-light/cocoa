@@ -307,16 +307,6 @@ class Command(Generic[T]):
             }
         )
 
-
-        for value in keyword_args.values():
-            if isinstance(value, Exception):
-                errors.append(value)
-                return (
-                    None,
-                    None,
-                    errors,
-                )
-
         missing_required_keyword_errors = [
             f"{config.full_flag} option is required"
             for flag, config in self.keyword_args_map.items()
