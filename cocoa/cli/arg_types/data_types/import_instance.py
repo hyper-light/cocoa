@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import asyncio
 import importlib
 import importlib.util
@@ -16,7 +14,7 @@ T = TypeVar("T")
 class ImportInstance(Generic[T]):
     def __init__(
         self,
-        data_type: ImportInstance[T],
+        data_type: 'ImportInstance[T]',
     ):
         super().__init__()
         self.data: dict[str, T] | None = None

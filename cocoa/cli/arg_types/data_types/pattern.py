@@ -1,4 +1,3 @@
-from __future__ import annotations
 import asyncio
 import re
 from typing import Generic, TypeVar, Any, get_args, get_origin
@@ -10,7 +9,7 @@ K = TypeVar("K")
 
 
 class Pattern(Generic[T, K]):
-    def __init__(self, pattern: Pattern[T, K]):
+    def __init__(self, pattern: 'Pattern[T, K]'):
         super().__init__()
 
         self.data: K | None = None

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import asyncio
 import os
 from typing import Generic, TypeVar, Any
@@ -13,7 +11,7 @@ class Env(Generic[T]):
     def __init__(
         self,
         envar: str,
-        data_type: Env[T],
+        data_type: 'Env[T]',
     ):
         super().__init__()
         self._envar = envar

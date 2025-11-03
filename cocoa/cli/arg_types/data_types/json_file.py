@@ -1,4 +1,3 @@
-from __future__ import annotations
 import asyncio
 import io
 import json
@@ -11,7 +10,7 @@ T = TypeVar("T", bound=BaseModel)
 
 
 class JsonFile(Generic[T]):
-    def __init__(self, data_type: JsonFile[T]):
+    def __init__(self, data_type: 'JsonFile[T]'):
         super().__init__()
 
         self.data: T | None = None

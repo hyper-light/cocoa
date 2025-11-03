@@ -1,4 +1,3 @@
-from __future__ import annotations
 import asyncio
 import io
 from typing import Generic, TypeVar, Any
@@ -11,7 +10,7 @@ T = TypeVar("T")
 class RawFile(Generic[T]):
     def __init__(
         self,
-        data_type: RawFile[T],
+        data_type: 'RawFile[T]',
     ):
         super().__init__()
 

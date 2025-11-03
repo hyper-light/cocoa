@@ -1,6 +1,4 @@
-from __future__ import annotations
 import asyncio
-import io
 import json
 from pydantic import BaseModel
 from typing import Any, TypeVar, Generic
@@ -11,7 +9,7 @@ T = TypeVar("T", bound=BaseModel)
 
 
 class JsonData(Generic[T]):
-    def __init__(self, data_type: JsonData[T]):
+    def __init__(self, data_type: 'JsonData[T]'):
         super().__init__()
 
         self.data: T | None = None

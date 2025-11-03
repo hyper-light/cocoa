@@ -1,4 +1,3 @@
-from __future__ import annotations
 import asyncio
 from typing import TypeVar, Generic, Any
 from .reduce_pattern_type import reduce_pattern_type
@@ -8,7 +7,7 @@ T = TypeVar("T")
 
 
 class AssertSet(Generic[T]):
-    def __init__(self, name: str, data_type: AssertSet[T]):
+    def __init__(self, name: str, data_type: 'AssertSet[T]'):
         super().__init__()
         self.name = name
         self.data: T | None = None

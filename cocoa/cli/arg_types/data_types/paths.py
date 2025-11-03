@@ -1,8 +1,4 @@
-from __future__ import annotations
-
 import asyncio
-import functools
-import operator
 import os
 import pathlib
 
@@ -16,7 +12,7 @@ T = TypeVar("T")
 class Paths(Generic[T]):
     def __init__(
         self,
-        data_type: Paths[T],
+        data_type: 'Paths[T]',
     ):
         super().__init__()
 

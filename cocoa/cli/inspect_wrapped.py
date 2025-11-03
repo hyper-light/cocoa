@@ -5,6 +5,7 @@ from typing import (
     get_args, 
     get_origin, 
     Literal,
+    get_type_hints,
 )
 from types import UnionType
 from .arg_types import (
@@ -72,15 +73,18 @@ def inspect_wrapped(
 
     position_index: int = 0
 
+    annotations = get_type_hints(command_call)
+
     for arg_name, arg_attrs in call_args.parameters.items():
-        is_multiarg = check_if_multiarg(arg_attrs.annotation, [
+        annotation = annotations.get(arg_name)
+        is_multiarg = check_if_multiarg(annotation, [
             *KeywordArg.complex_types,
             *PositionalArg.complex_types
         ])
 
         if (
             arg_attrs.default == inspect._empty
-            and arg_attrs.annotation == inspect._empty
+            and annotation == inspect._empty
         ):
             raise Exception(
                 f"Err. - cannot use unannotated arg {arg_name} for command signature"
@@ -90,9 +94,9 @@ def inspect_wrapped(
             positional_args_map[position_index] = PositionalArg(
                 arg_name,
                 position_index,
-                arg_attrs.annotation,
+                annotation,
                 is_multiarg=is_multiarg,
-                is_context_arg=Context == arg_attrs.annotation,
+                is_context_arg=Context == annotation,
             )
 
             position_index += 1
@@ -100,21 +104,21 @@ def inspect_wrapped(
         else:
             arg_type: KeywordArgType = "keyword"
             arg_default = arg_attrs.default
-            if isinstance(arg_attrs.default, bool) or arg_attrs.annotation is bool:
+            if isinstance(arg_attrs.default, bool) or annotation is bool:
                 arg_type = "flag"
 
             if arg_type == "flag" and arg_attrs.default is None:
                 arg_default = False
 
             args_types = []
-            if get_origin(arg_attrs.annotation) is UnionType:
-                args_types.extend(get_args(arg_attrs.annotation))
+            if get_origin(annotation) is UnionType:
+                args_types.extend(get_args(annotation))
 
-            elif get_origin(arg_attrs.annotation) is Literal:
-                args_types.extend(get_args(arg_attrs.annotation))
+            elif get_origin(annotation) is Literal:
+                args_types.extend(get_args(annotation))
 
             else:
-                args_types.append(arg_attrs.annotation)
+                args_types.append(annotation)
 
             no_default = arg_attrs.default is None
             none_not_preset = len([
@@ -126,13 +130,13 @@ def inspect_wrapped(
             full_flag = "-".join(arg_name.split("_"))
             keyword_arg = KeywordArg(
                 arg_name,
-                arg_attrs.annotation,
+                annotation,
                 short_name=shortnames.get(full_flag),
                 required=required,
                 default=arg_default,
                 arg_type=arg_type,
                 is_multiarg=is_multiarg,
-                is_context_arg=Context == arg_attrs.annotation,
+                is_context_arg=Context == annotation,
             )
 
             keyword_args_map[keyword_arg.full_flag] = keyword_arg
