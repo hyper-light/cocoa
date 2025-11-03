@@ -26,6 +26,7 @@ class JsonFile(Generic[T]):
         self._types = conversion_types
 
         self._loop = asyncio.get_event_loop()
+        self.value: str | None = None
 
     def __contains__(self, value: Any):
         return type(value) in [self._types]
@@ -40,6 +41,7 @@ class JsonFile(Generic[T]):
             return result
 
         self.data = result
+        self.value = arg
 
         return self
 

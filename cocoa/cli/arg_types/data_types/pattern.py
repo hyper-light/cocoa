@@ -28,6 +28,7 @@ class Pattern(Generic[T, K]):
         self._type = conversion_type
 
         self._loop = asyncio.get_event_loop()
+        self.value: str | None = None
 
     def __contains__(self, value: Any):
         return type(value) in [self._type]
@@ -43,6 +44,7 @@ class Pattern(Generic[T, K]):
             return results
 
         self.data: K = results
+        self.value = arg
 
         return self
 

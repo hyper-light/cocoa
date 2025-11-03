@@ -29,6 +29,7 @@ class Env(Generic[T]):
         ]
 
         self._loop = asyncio.get_event_loop()
+        self.value: str | None = None
 
     def __contains__(self, value: Any):
         return type(value) in [self._types]
@@ -41,6 +42,7 @@ class Env(Generic[T]):
         
         if arg:
             self.data = arg
+            self.value = arg
 
             return self
 
@@ -49,6 +51,7 @@ class Env(Generic[T]):
             return result
 
         self.data = result
+        self.value = arg
 
         return self
 

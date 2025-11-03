@@ -79,6 +79,7 @@ class Chain(Generic[*T]):
         }
 
         self._loop = asyncio.get_event_loop()
+        self.value: str | None = None
 
     def __contains__(self, value: Any):
         return type(value) in self._types
@@ -102,5 +103,6 @@ class Chain(Generic[*T]):
                 return err
 
         self.data = result
+        self.value = arg
 
         return self

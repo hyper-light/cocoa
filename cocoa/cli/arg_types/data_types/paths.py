@@ -33,6 +33,7 @@ class Paths(Generic[T]):
         self._types = [type(pattern) for pattern in self._patterns]
 
         self._loop = asyncio.get_event_loop()
+        self.value: str | None = None
 
     def __contains__(self, value: Any):
         return type(value) in [self._types]
@@ -47,6 +48,7 @@ class Paths(Generic[T]):
             return result
 
         self.data = result
+        self.value = arg
 
         return self
 

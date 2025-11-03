@@ -60,6 +60,7 @@ class YamlFile(Generic[T]):
         self._types = conversion_types
 
         self._loop = asyncio.get_event_loop()
+        self.value: str | None = None
 
     def __contains__(self, value: Any):
         return type(value) in [self._types]
@@ -82,11 +83,18 @@ class YamlFile(Generic[T]):
             if arg is None:
                 return Exception("no argument passed for filepath")
 
-            return await self._loop.run_in_executor(
+            result =  await self._loop.run_in_executor(
                 None,
                 self._load_yaml_or_default,
                 arg,
             )
+
+            if isinstance(result, Exception):
+                return result
+            
+            self.value = arg
+
+            return result
 
         except Exception as e:
             return Exception(

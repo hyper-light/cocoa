@@ -19,6 +19,7 @@ class AssertPath:
         self._types = [str]
 
         self._loop = asyncio.get_event_loop()
+        self.value: str | None = None
 
     def __contains__(self, value: Any):
         return type(value) in [self._types]
@@ -40,6 +41,7 @@ class AssertPath:
             return Exception(f'Path {arg} does not exist')
 
         self.data = path
+        self.value = arg
 
         return self
 

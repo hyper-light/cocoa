@@ -39,6 +39,7 @@ class Map(Generic[*T]):
         ]
 
         self.data: Any | None = None
+        self.value: str | None = None
 
         self._complex_types: dict[
             AssertPath
@@ -109,5 +110,6 @@ class Map(Generic[*T]):
                 return errs[0]
 
         self.data = result
+        self.value = arg
 
         return self
