@@ -460,10 +460,11 @@ class Group(Generic[T]):
 
         for value in keyword_args.values():
             if isinstance(value, Exception):
+                errors.append(value)
                 return (
                     None,
                     None,
-                    value,
+                    errors,
                 )
 
         missing_required_keyword_errors = [
