@@ -7,10 +7,16 @@ from typing import Any
 try:
     from ruamel.yaml import YAML
     from ruamel.yaml.comments import CommentedBase
+    from ruamel.yaml.comments import CommentedMap
 
 except (Exception, ImportError):
 
     class CommentedBase:
+
+        def __init__(self):
+            pass
+
+    class CommentedMap:
 
         def __init__(self):
             pass
@@ -20,13 +26,24 @@ except (Exception, ImportError):
             self,
             typ: str | None = None
         ):
+            self.preserve_quotes: bool = False
+            self.width: int = 0 
+
+        def indent(
+            mapping: int | None = None, 
+            sequence: int | None = None, 
+            offset: int | None = None,
+        ):
             pass
 
         def load(self, file_pointer: Any):
-            return ImportError('You must install the [yaml] option to use the YamlFile operator!')
+            return ImportError('You must install the [yaml] option to use the YamlFileWithDefault operator!')
+        
+        def dump(self, file_pointer: Any):
+            return ImportError('You must install the [yaml] option to use the YamlFileWithDefault operator!')
 
 
-class YamlFile:
+class YamlFileWithDefault:
     def __init__(self):
         super().__init__()
 
@@ -70,14 +87,15 @@ class YamlFile:
 
             return await self._loop.run_in_executor(
                 None,
-                self._load_yaml_file,
+                self._load_yaml_or_default,
                 arg,
             )
 
         except Exception as e:
             return Exception(f"encountered error {str(e)} opening file at {arg}")
 
-    def _load_yaml_file(self, arg: str):
+    def _load_yaml_or_default(self, arg: str):
+
         if arg.startswith('~/'):
             arg.replace('~/', '')
             arg = os.path.join(
@@ -89,6 +107,19 @@ class YamlFile:
             arg = os.getcwd()
 
         yaml = YAML(typ='rt')
+        if not pathlib.Path(arg).absolute().exists():
 
+            yaml.preserve_quotes = True
+            yaml.width = 4096
+            yaml.indent(mapping=2, sequence=4, offset=2)
+            with open(arg, 'w') as file:
+                yaml.dump(file)
+
+
+            return file
+        
         with open(arg) as file:
             return yaml.load(file)
+
+                
+
