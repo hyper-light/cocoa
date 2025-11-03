@@ -47,6 +47,7 @@ class OptionsHelpMessage(BaseModel):
         self,
         global_styles: CLIStyle | None = None,
     ):
+    
         indentation = self.indentation
         if global_styles and global_styles.indentation:
             indentation = global_styles.indentation
@@ -63,7 +64,9 @@ class OptionsHelpMessage(BaseModel):
         arg_string = join_char.join(
             [
                 await self._to_help_string(
-                    arg, descriptor=param_descriptors.get(arg.name), styles=styles
+                    arg,
+                    descriptor=param_descriptors.get(arg.name),
+                    styles=styles,
                 )
                 for arg in self.options
                 if Context not in arg.value_type
@@ -92,6 +95,7 @@ class OptionsHelpMessage(BaseModel):
         descriptor: str | None = None,
         styles: CLIStyle | None = None,
     ):
+
         if descriptor is None:
             descriptor = arg.description
 

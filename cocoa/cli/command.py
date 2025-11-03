@@ -137,7 +137,7 @@ class Command(Generic[T]):
         (positional_args, keyword_args, errors) = await self._find_args(args, context)
 
         if positional_args is None and keyword_args is None:
-            await self._print_group_help_message()
+            await self._print_command_help_message()
 
             return (
                 None,
@@ -146,7 +146,7 @@ class Command(Generic[T]):
             )
 
         elif len(errors) > 0:
-            await self._print_group_help_message(
+            await self._print_command_help_message(
                 error=errors[0],
             )
 
@@ -170,7 +170,7 @@ class Command(Generic[T]):
             if self.display_help_on_error is False:
                 raise err
 
-            await self._print_group_help_message(
+            await self._print_command_help_message(
                 error=str(err),
             )
 
@@ -217,7 +217,7 @@ class Command(Generic[T]):
         )
 
 
-    async def _print_group_help_message(
+    async def _print_command_help_message(
         self,
         error: str | None = None
     ):

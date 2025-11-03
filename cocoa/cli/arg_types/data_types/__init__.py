@@ -9,3 +9,4 @@ from .json_file import JsonFile as JsonFile
 from .paths import Paths as Paths
 from .pattern import Pattern as Pattern
 from .raw_file import RawFile as RawFile
+from .yaml_file import YamlFile as YamlFile

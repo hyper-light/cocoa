@@ -123,11 +123,11 @@ def inspect_wrapped(
 
             required = no_default and none_not_preset
 
-
+            full_flag = "-".join(arg_name.split("_"))
             keyword_arg = KeywordArg(
                 arg_name,
                 arg_attrs.annotation,
-                short_name=shortnames.get(arg_name),
+                short_name=shortnames.get(full_flag),
                 required=required,
                 default=arg_default,
                 arg_type=arg_type,

@@ -14,6 +14,7 @@ from cocoa.cli.arg_types.data_types import (
     Paths,
     Pattern,
     RawFile,
+    YamlFile,
 )
 
 T = TypeVarTuple("T")
@@ -48,7 +49,8 @@ class Chain(Generic[*T]):
             | JsonData
             | JsonData
             | Pattern
-            | RawFile,
+            | RawFile
+            | YamlFile,
             Callable[
                 [str, type[Any]],
                 AssertPath
@@ -59,7 +61,8 @@ class Chain(Generic[*T]):
                 | JsonData
                 | JsonData
                 | Pattern
-                | RawFile,
+                | RawFile
+                | YamlFile
             ],
         ] = {
             AssertPath: lambda _, __: AssertPath(),
@@ -72,6 +75,7 @@ class Chain(Generic[*T]):
             Paths: lambda _, subtype: Paths(subtype),
             Pattern: lambda _, subtype: Pattern(subtype),
             RawFile: lambda _, subtype: RawFile(subtype),
+            YamlFile: lambda _, __: YamlFile()
         }
 
         self._loop = asyncio.get_event_loop()

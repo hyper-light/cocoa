@@ -125,6 +125,7 @@ class Group(Generic[T]):
 
         self.subgroups: dict[str, Group[Any]] = {}
         self.subcommands: dict[str, Command[Any]] = {}
+
         self._global_styles: CLIStyle | None = None
 
         self.positional_args = positional_args
