@@ -20,7 +20,6 @@ from cocoa.cli.arg_types.data_types import (
     Pattern,
     RawFile,
     YamlFile,
-    YamlFileWithDefault,
 )
 from cocoa.cli.arg_types.data_types.reduce_pattern_type import reduce_pattern_type
 from cocoa.cli.arg_types.operators import Operator
@@ -42,8 +41,7 @@ class PositionalArg(Generic[T]):
         | Paths
         | Pattern
         | RawFile
-        | YamlFile
-        | YamlFileWithDefault,
+        | YamlFile,
         Callable[
             [str, type[Any]],
             AssertPath
@@ -58,8 +56,7 @@ class PositionalArg(Generic[T]):
             | Paths
             | Pattern
             | RawFile
-            | YamlFile
-            | YamlFileWithDefault,
+            | YamlFile,
         ],
     ] = {
         AssertPath: lambda _, __: AssertPath(),
@@ -74,8 +71,7 @@ class PositionalArg(Generic[T]):
         Paths: lambda _, subtype: Paths(subtype),
         Pattern: lambda _, subtype: Pattern(subtype),
         RawFile: lambda _, subtype: RawFile(subtype),
-        YamlFile: lambda _, __: YamlFile(),
-        YamlFileWithDefault: lambda _, __: YamlFileWithDefault(),
+        YamlFile: lambda _, subtype: YamlFile(subtype),
     }
     
     def __init__(

@@ -17,7 +17,6 @@ from .data_types import Paths as Paths
 from .data_types import Pattern as Pattern
 from .data_types import RawFile as RawFile
 from .data_types import YamlFile as YamlFile
-from .data_types import YamlFileWithDefault as YamlFileWithDefault
 from .operators import Chain as Chain
 from .operators import Map as Map
 from .operators import Operator as Operator
