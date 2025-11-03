@@ -458,6 +458,14 @@ class Group(Generic[T]):
             }
         )
 
+        for value in keyword_args.values():
+            if isinstance(value, Exception):
+                return (
+                    None,
+                    None,
+                    value,
+                )
+
         missing_required_keyword_errors = [
             f"{config.full_flag} option is required"
             for flag, config in self.keyword_args_map.items()
@@ -673,6 +681,13 @@ class Group(Generic[T]):
 
         elif value is None and keyword_arg.required is False:
             value = await keyword_arg.to_default()
+            if isinstance(value, Exception):
+                last_error = value
+                return (
+                    value,
+                    last_error,
+                    consumed_idxs,
+                )
 
         consumed_idx = current_idx + value_idx + 1
 

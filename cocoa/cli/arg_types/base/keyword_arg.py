@@ -201,8 +201,6 @@ class KeywordArg(Generic[T]):
         return self.full_flag
 
     async def parse(self, value: str | None = None):
-        parse_error: Exception | None = None
-
         if self.is_multiarg:
             value_types = []
             for subtype in self._value_type:
@@ -229,6 +227,7 @@ class KeywordArg(Generic[T]):
 
     async def _parse(self, value: str | None, value_types: list[Any]):
 
+        parse_error: Exception | None = None
         for subtype in value_types:
             try:
                 if (
