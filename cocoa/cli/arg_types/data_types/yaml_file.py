@@ -8,16 +8,8 @@ from .reduce_pattern_type import reduce_pattern_type
 
 try:
     from ruamel.yaml import YAML
-    from ruamel.yaml.comments import CommentedBase
-    from ruamel.yaml.comments import CommentedMap
 
 except (Exception, ImportError):
-
-    class CommentedBase:
-
-        def __init__(self):
-            pass
-
 
     class YAML:
         def __init__(
@@ -41,7 +33,8 @@ except (Exception, ImportError):
             return ImportError('You must install the [yaml] option to use the YamlFileWithDefault operator!')
 
 
-T = TypeVar("T", bound=CommentedBase)
+T = TypeVar("T", bound=BaseModel)
+
 
 class YamlFile(Generic[T]):
     def __init__(self, data_type: 'YamlFile[T]'):
@@ -119,24 +112,37 @@ class YamlFile(Generic[T]):
             yaml.preserve_quotes = True
             yaml.width = 4096
             yaml.indent(mapping=2, sequence=4, offset=2)
-            file_default_type: CommentedBase | None = None
+            file_default_type: T | None = None
             for conversion_type in self._types:
                 if conversion_type:
                     file_default_type = conversion_type()
 
             if file_default_type:
                 with open(arg, 'w') as file:
-                    yaml.dump(file_default_type, file)
+                    yaml.dump(file_default_type.model_dump(), file)
 
             return file_default_type
         
         with open(arg) as file:
-            data = yaml.load(file)
+            return self._parse_type(yaml.load(file))
 
-            if data is None:
-                return CommentedMap()
-            
-            return data
+    def _parse_type(
+        self,
+        yaml_data: dict[str, Any],
+        arg: str,
+    ):
+        for conversion_type in self._types:
+            try:
+                if conversion_type in [list] and isinstance(yaml_data, list):
+                    return yaml_data
 
-                
+                elif conversion_type in [bytes]:
+                    return bytes(yaml_data, encoding="utf-8")
+
+                return conversion_type(**yaml_data)
+
+            except Exception:
+                pass
+
+        return Exception(f"could not parse file at {arg} from Yaml to specified types")
 
