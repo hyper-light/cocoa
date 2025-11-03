@@ -124,7 +124,7 @@ class YamlFile(Generic[T]):
             return file_default_type
         
         with open(arg) as file:
-            return self._parse_type(yaml.load(file))
+            return self._parse_type(yaml.load(file), arg)
 
     def _parse_type(
         self,
