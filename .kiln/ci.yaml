@@ -1,0 +1,47 @@
+# cocoa has no CI workflow, only .github/workflows/release.yml: `python -m build`
+# on Python 3.12, then a PyPI upload (PYPI_API_TOKEN; not reproduced). This
+# pipeline keeps that build, adds the metadata check the publish action runs
+# before uploading (twine check), and -- the repo has no test suite -- smoke-tests
+# the built wheel: import its packages and run the example that still works.
+# (example/test_check_multiarg.py is stale: it calls check_if_multiarg() with one
+# argument, the function now takes two.)
+#
+# Python 3.12 as release.yml builds with (its PYTHON_VERSION env says 3.13 but is
+# unused). The classifiers stop at 3.13; on 3.14 importing cocoa.cli raises,
+# because Group() calls asyncio.get_event_loop() at import time.
+name: ci
+
+on:
+  push: { branches: [main] }
+  pull_request: {}
+  manual: true
+
+concurrency: { group: "ci-${{ branch }}", cancel-in-progress: true }
+
+jobs:
+  build:
+    name: build sdist + wheel
+    runs-on: [k8s]
+    toolchain: python
+    timeout-minutes: 15
+    resources: { cpu: "1", memory: 2Gi }
+    artifacts: ["dist/*"]
+    steps:
+      - name: Set up Python 3.12
+        # actions/setup-python stand-in: a uv-managed CPython in a venv seeded with pip.
+        run: uv python install 3.12 && uv venv --seed --python 3.12 .venv
+      - name: Install pypa/setuptools
+        run: . .venv/bin/activate && python -m pip install wheel build setuptools twine
+      - name: Build a binary wheel (and sdist)
+        run: . .venv/bin/activate && python -m build
+      - name: Twine check
+        run: . .venv/bin/activate && python -m twine check dist/*
+      - name: Smoke-test the wheel
+        # A fresh venv and `python -I`, so the installed wheel -- not the
+        # checkout's cocoa/ namespace directory -- is what gets imported.
+        run: |
+          smoke="$TMPDIR/wheel-smoke"
+          uv venv --seed --python 3.12 "$smoke"
+          "$smoke/bin/python" -m pip install dist/*.whl
+          "$smoke/bin/python" -I -c "import cocoa.cli, cocoa.ui, cocoa.utils"
+          "$smoke/bin/python" -I example/test_cyperpunk.py
